@@ -4,5 +4,5 @@ import com.example.smsmanagerapp.interfaces.IMessageListenerObservable;
 
 public interface MessageListener extends IMessageListenerObservable {
 
-    public void listenForSMSMessages();
+    public void listenForMessages();
 }

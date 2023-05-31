@@ -1,5 +1,6 @@
 package com.example.smsmanagerapp.listener;
 
+import com.example.smsmanagerapp.data.Data;
 import com.example.smsmanagerapp.data.SMSMessage;
 import com.example.smsmanagerapp.YeastarDeviceMessages;
 import com.example.smsmanagerapp.interfaces.IMessageListenerObserver;
@@ -20,7 +21,7 @@ public class SMSListenerYeastar implements MessageListener {
     private PrintWriter out;
     private BufferedReader in;
     private List<SMSMessage> smsMessages;
-    private SMSMessage lastSMSMessage;
+   // private SMSMessage lastSMSMessage;
     private List<IMessageListenerObserver> listenerObservers;
     public SMSListenerYeastar(Socket socket) {
         this.smsMessages = new ArrayList<>();
@@ -40,7 +41,7 @@ public class SMSListenerYeastar implements MessageListener {
     }
 
     @Override
-    public void listenForSMSMessages() {
+    public void listenForMessages() {
         ExecutorService executorService = Executors.newSingleThreadExecutor();
         executorService.submit(() -> {
             String response;
@@ -57,8 +58,8 @@ public class SMSListenerYeastar implements MessageListener {
                       } else if (response.equals(YeastarDeviceMessages.getEndSMSEvent())) {
                           buildingSMS = false;
                           smsMessages.add(smsMessage);
-                          lastSMSMessage = smsMessage;
-                          notifyObserver();
+                          //lastSMSMessage = smsMessage;
+                          notifyObservers(smsMessage);
                           System.out.println("Sender: " + smsMessage.getSender() + " Content: " + smsMessage.getContent());
                           smsMessage = null;
                           System.out.println("Koniec confirmed");
@@ -89,9 +90,9 @@ public class SMSListenerYeastar implements MessageListener {
     }
 
     @Override
-    public void notifyObserver() {
+    public void notifyObservers(Data data) {
         for (IMessageListenerObserver listenerObserver : listenerObservers) {
-            listenerObserver.newMessage(lastSMSMessage);
+            listenerObserver.newMessage(data);
         }
     }
 }

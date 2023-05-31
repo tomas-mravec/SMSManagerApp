@@ -7,7 +7,7 @@ import com.example.smsmanagerapp.connection.ConnectionEstablisherYeastar;
 public class ConnectionEstablisherFactory {
 
     public static ConnectionEstablisher create(String type, String ipAddress, int port, String username, String secret) {
-        if (type.equals("Yeastar")) {
+        if (type.equals("SMS_Yeastar")) {
             return new ConnectionEstablisherYeastar(ipAddress, port, username, secret);
         }
 

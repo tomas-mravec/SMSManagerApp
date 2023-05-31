@@ -23,8 +23,11 @@ public class GUIUpdaterImpl implements GUIUpdater{
     }
 
     private void handleNewMessage(Data data) {
+        System.out.println("Som v handle Message guiupdatera");
         for (GUIController guiController : guiControllers) {
+            System.out.println("1--");
             guiController.updateGUI(data);
+            System.out.println("2--");
         }
     }
 }

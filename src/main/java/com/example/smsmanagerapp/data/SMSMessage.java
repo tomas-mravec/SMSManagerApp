@@ -77,6 +77,10 @@ public class SMSMessage implements Data {
                 case "Sender":
                     setSender(value);
                     break;
+                case "Recvtime":
+                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+                    setRecvTime(LocalDateTime.parse(value, formatter));
+                    break;
             }
         }
     }
@@ -92,7 +96,7 @@ public class SMSMessage implements Data {
 
     }
 
-    private void setSender(String sender) {
+    public void setSender(String sender) {
         this.sender = sender;
     }
 
@@ -104,7 +108,7 @@ public class SMSMessage implements Data {
 
     }
 
-    private void setContent(String content) {
+    public void setContent(String content) {
         this.content = content;
     }
 
@@ -112,8 +116,8 @@ public class SMSMessage implements Data {
 
     }
 
-    private void setRecvTime(LocalDateTime parse) {
-
+    public void setRecvTime(LocalDateTime recvTime) {
+        this.recvTime = recvTime;
     }
 
     private void setEvent(String event) {

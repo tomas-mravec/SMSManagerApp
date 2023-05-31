@@ -10,8 +10,6 @@ module com.example.smsmanagerapp {
     opens com.example.smsmanagerapp.gui to javafx.fxml;
     exports com.example.smsmanagerapp.interfaces;
     opens com.example.smsmanagerapp.interfaces to javafx.fxml;
-    exports com.example.smsmanagerapp.gui;
-    opens com.example.smsmanagerapp.gui to javafx.fxml;
     exports com.example.smsmanagerapp.gui.controller;
     opens com.example.smsmanagerapp.gui.controller to javafx.fxml;
     exports com.example.smsmanagerapp.data;
