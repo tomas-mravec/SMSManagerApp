@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox fx:id="menuBox" alignment="CENTER" prefHeight="651.0" prefWidth="151.0" style="-fx-background-color: #ADD8E6;" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.smsmanagerapp.gui.controller.MenuControllerImpl">
+   <children>
+      <Button mnemonicParsing="false" onAction="#switchToNewSMSScene" prefHeight="35.0" prefWidth="153.0" text="Nové správy" />
+      <Button mnemonicParsing="false" onAction="#switchToHistoryScene" prefHeight="39.0" prefWidth="151.0" text="História" />
+   </children>
+</VBox>

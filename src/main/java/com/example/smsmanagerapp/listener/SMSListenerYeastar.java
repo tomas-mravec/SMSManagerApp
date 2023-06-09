@@ -3,6 +3,7 @@ package com.example.smsmanagerapp.listener;
 import com.example.smsmanagerapp.data.Data;
 import com.example.smsmanagerapp.data.SMSMessage;
 import com.example.smsmanagerapp.YeastarDeviceMessages;
+import com.example.smsmanagerapp.gui.GUINotifier;
 import com.example.smsmanagerapp.interfaces.IMessageListenerObserver;
 
 import java.io.BufferedReader;
@@ -59,6 +60,7 @@ public class SMSListenerYeastar implements MessageListener {
                           buildingSMS = false;
                           smsMessages.add(smsMessage);
                           //lastSMSMessage = smsMessage;
+                          GUINotifier.getInstance().newMessage(smsMessage);
                           notifyObservers(smsMessage);
                           System.out.println("Sender: " + smsMessage.getSender() + " Content: " + smsMessage.getContent());
                           smsMessage = null;
