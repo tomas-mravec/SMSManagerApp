@@ -6,7 +6,7 @@ import java.time.format.DateTimeFormatter;
 public class SMSMessage implements Data {
     private String event;
     private String privilege;
-    private String id;
+    private int id;
     private int gsmSpan;
     private String sender;
     private LocalDateTime recvTime;
@@ -14,6 +14,7 @@ public class SMSMessage implements Data {
     private int total;
     private String smsc;
     private String content;
+    private boolean seen = false;
 
     // constructor, getters, and setters omitted for brevity
 
@@ -32,7 +33,7 @@ public class SMSMessage implements Data {
                     sms.setPrivilege(value);
                     break;
                 case "ID":
-                    sms.setId(value);
+                    //sms.setId(value);
                     break;
                 case "GsmSpan":
                     sms.setGsmSpan(Integer.parseInt(value));
@@ -88,8 +89,8 @@ public class SMSMessage implements Data {
     private void setPrivilege(String value) {
     }
 
-    private void setId(String value) {
-
+    public void setId(int id) {
+        this.id = id;
     }
 
     private void setGsmSpan(int parseInt) {
@@ -132,7 +133,7 @@ public class SMSMessage implements Data {
         return privilege;
     }
 
-    public String getId() {
+    public int getId() {
         return id;
     }
 
@@ -164,6 +165,12 @@ public class SMSMessage implements Data {
         return content;
     }
 
+    public boolean isSeen() {
+        return seen;
+    }
 
+    public void setSeen(boolean seen) {
+        this.seen = seen;
+    }
 }
 

@@ -3,6 +3,7 @@ module com.example.smsmanagerapp {
     requires javafx.fxml;
 
     requires org.kordamp.bootstrapfx.core;
+    requires java.sql;
 
     opens com.example.smsmanagerapp to javafx.fxml;
     exports com.example.smsmanagerapp;
@@ -15,4 +16,5 @@ module com.example.smsmanagerapp {
     exports com.example.smsmanagerapp.data;
     opens com.example.smsmanagerapp.data to javafx.fxml;
     //opens com.example.smsmanagerapp.custom.control to javafx.fxml;
+
 }

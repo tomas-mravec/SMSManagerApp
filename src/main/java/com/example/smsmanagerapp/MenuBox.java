@@ -1,6 +1,6 @@
 package com.example.smsmanagerapp;
 
-import com.example.smsmanagerapp.container.interfaces.MessageContainer;
+import com.example.smsmanagerapp.container.interfaces.MessageManager;
 import com.example.smsmanagerapp.gui.controller.GUIController;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -22,7 +22,7 @@ public class MenuBox extends VBox{
     private Stage stage;
     private Scene scene;
     private Parent root;
-    private List<MessageContainer> messageContainers;
+    private List<MessageManager> messageManagers;
 
     @FXML
     private Button switchToNewMessages;
@@ -47,7 +47,7 @@ public class MenuBox extends VBox{
 //            }
 //        });
         //historyButton.setOnAction(event -> switchToHistoryScene());
-        messageContainers = new ArrayList<>();
+        messageManagers = new ArrayList<>();
         intList = new ArrayList<>();
         Random random = new Random();
         int randomNumber = random.nextInt(21);
@@ -63,7 +63,7 @@ public class MenuBox extends VBox{
     /// skus dat random generator a nech menubox vypise to random cislo ci to je stale ta ista instancia a nie ina
    // je to confirmed je to nova instancia, treba zistit preco a da sa to vyriesit implementaciou singletona
     public void switchToNewSMSScene(ActionEvent event) throws IOException {
-        System.out.println("Stlacil som tlacidlo, length array je: " + this.messageContainers.size());
+        System.out.println("Stlacil som tlacidlo, length array je: " + this.messageManagers.size());
         System.out.println("Stlacil som tlacidlo, int list ma length: " + intList.size());
        // FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("new-sms-view.fxml"));
 //        root = fxmlLoader.load();
@@ -82,10 +82,10 @@ public class MenuBox extends VBox{
     }
 
     private void addMessageContainersToController(GUIController guiController) {
-        System.out.println("Dam vobec nejaky kontainer do controllera?: " + "Dlzka menu: " + this.toString() + " array kontainerov je " + messageContainers.size());
-        for (MessageContainer messageContainer: messageContainers) {
+        System.out.println("Dam vobec nejaky kontainer do controllera?: " + "Dlzka menu: " + this.toString() + " array kontainerov je " + messageManagers.size());
+        for (MessageManager messageManager : messageManagers) {
             System.out.println("YEP");
-            guiController.addMessageContainer(messageContainer);
+            guiController.addMessageManager(messageManager);
         }
     }
 
@@ -102,9 +102,9 @@ public class MenuBox extends VBox{
         stage.show();
     }
 
-    public void addMessageContainer(MessageContainer messageContainer) {
-        this.messageContainers.add(messageContainer);
-        System.out.println("Menu: " + this.toString() +" message container received" + " length of container array is: " + messageContainers.size());
+    public void addMessageManager(MessageManager messageManager) {
+        this.messageManagers.add(messageManager);
+        System.out.println("Menu: " + this.toString() +" message container received" + " length of container array is: " + messageManagers.size());
         System.out.println("Intlist ma dlzku: " + intList.size());
     }
 }

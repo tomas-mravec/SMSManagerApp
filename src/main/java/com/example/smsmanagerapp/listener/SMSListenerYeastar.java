@@ -60,7 +60,6 @@ public class SMSListenerYeastar implements MessageListener {
                           buildingSMS = false;
                           smsMessages.add(smsMessage);
                           //lastSMSMessage = smsMessage;
-                          GUINotifier.getInstance().newMessage(smsMessage);
                           notifyObservers(smsMessage);
                           System.out.println("Sender: " + smsMessage.getSender() + " Content: " + smsMessage.getContent());
                           smsMessage = null;

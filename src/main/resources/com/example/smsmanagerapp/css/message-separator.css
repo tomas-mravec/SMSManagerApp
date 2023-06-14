@@ -1,0 +1,4 @@
+.message-separator {
+    -fx-background-color: black;
+    -fx-padding: 1px 0; /* Adjust the spacing as desired */
+}

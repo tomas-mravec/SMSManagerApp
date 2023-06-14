@@ -1,7 +1,7 @@
 package com.example.smsmanagerapp.gui.controller;
 
-import com.example.smsmanagerapp.container.interfaces.MessageContainer;
-import com.example.smsmanagerapp.container.type.MessageContainerType;
+import com.example.smsmanagerapp.container.interfaces.MessageManager;
+import com.example.smsmanagerapp.container.type.MessageRecencyType;
 import com.example.smsmanagerapp.data.Data;
 import com.example.smsmanagerapp.data.SMSMessage;
 import com.example.smsmanagerapp.manager.MenuManager;
@@ -28,10 +28,12 @@ public class NewSMSMessagesController implements GUIController, Initializable {
     private MenuControllerImpl menuController;
     @FXML
     private AnchorPane rootPane;
-    private List<MessageContainer> messageContainers;
+    private List<MessageManager> messageManagers;
+    private MessageRecencyType recencyType;
 
     public NewSMSMessagesController() {
-        messageContainers = new ArrayList<>();
+        messageManagers = new ArrayList<>();
+        recencyType = MessageRecencyType.NEW_MESSAGE;
     }
 
     @Override
@@ -76,82 +78,80 @@ public class NewSMSMessagesController implements GUIController, Initializable {
 
     public void loadMessages() {
         System.out.println("Loadujem data z gui controllera");
-        for (MessageContainer messageContainer : messageContainers) {
-           for (Data data : messageContainer.getAllMessages()) {
-               if (messageContainer.getContainerType() == MessageContainerType.NEW_MESSAGE) {
+        for (MessageManager messageManager : messageManagers) {
+           for (Data data : messageManager.getAllNewMessages()) {
                    updateGUI(data);
-               }
            }
         }
     }
 
     @Override
     public void updateGUI(Data data) {
-        Platform.runLater(() -> {
-            SMSMessage smsMessage = (SMSMessage) data;
-            System.out.println("Som v update gui gui controllera");
-            System.out.println(((SMSMessage) data).getSender() + " Sprava: " + ((SMSMessage) data).getContent());
+        if (data != null) {
+            Platform.runLater(() -> {
+                SMSMessage smsMessage = (SMSMessage) data;
+                System.out.println("Som v update gui gui controllera");
+                System.out.println(((SMSMessage) data).getSender() + " Sprava: " + ((SMSMessage) data).getContent());
 
-            VBox messageContainer = new VBox();
-            Label label1 = new Label();
-            label1.setText("Odosielateľ: " + smsMessage.getSender());
+                VBox messageContainer = new VBox();
+                Label label1 = new Label();
+                label1.setText("Odosielateľ: " + smsMessage.getSender());
 //        Label label2 = new Label();
 //        label2.setText("Čas: " + smsMessage.getRecvTime());
-            Label label3 = new Label();
-            label3.setText("Správa: " + smsMessage.getContent());
+                Label label3 = new Label();
+                label3.setText("Správa: " + smsMessage.getContent());
 
 
-            label1.setWrapText(true); // Enable text wrapping
-            label1.setMaxWidth(Double.MAX_VALUE);
+                label1.setWrapText(true); // Enable text wrapping
+                label1.setMaxWidth(Double.MAX_VALUE);
 //        label2.setWrapText(true); // Enable text wrapping
 //        label2.setMaxWidth(Double.MAX_VALUE);
-            label3.setWrapText(true); // Enable text wrapping
-            label3.setMaxWidth(Double.MAX_VALUE);
+                label3.setWrapText(true); // Enable text wrapping
+                label3.setMaxWidth(Double.MAX_VALUE);
 
 
-            Button sendToHistory = new Button();
-            sendToHistory.setText("Videné");
-            sendToHistory.setOnAction(event -> {
-                System.out.println("Bol stlaceny button na odoslanie do historie");
-                sendMessageToHistory(smsMessage);
-                messageBox.getChildren().remove(messageContainer);
-            });
+                Button sendToHistory = new Button();
+                sendToHistory.setText("Videné");
+                sendToHistory.setOnAction(event -> {
+                    System.out.println("Bol stlaceny button na odoslanie do historie");
+                    sendMessageToHistory(smsMessage);
+                    messageBox.getChildren().remove(messageContainer);
+                });
 
-            Separator separator = new Separator();
-            separator.getStyleClass().add("\\css\\message-separator");
+                Separator separator = new Separator();
+                separator.getStyleClass().add("\\css\\message-separator");
 
-            messageContainer.getChildren().addAll(label1, label3,sendToHistory,separator);
+                messageContainer.getChildren().addAll(label1, label3, sendToHistory, separator);
 
 //        messageContainer.setMaxWidth(Double.MAX_VALUE);
 //        messageBox.setMaxWidth(Double.MAX_VALUE);
 //        VBox.setVgrow(messageBox, Priority.ALWAYS);
 //        VBox.setVgrow(messageContainer, Priority.ALWAYS);
 
-            messageBox.getChildren().add(messageContainer);
+                messageBox.getChildren().add(messageContainer);
 
-        });
+            });
+        }
     }
 
     private void sendMessageToHistory(SMSMessage smsMessage) {
-        for (MessageContainer messageContainer : messageContainers) {
-            if (messageContainer.getContainerType() == MessageContainerType.NEW_MESSAGE) {
-                messageContainer.remove(smsMessage);
-            }
-            if (messageContainer.getContainerType() == MessageContainerType.HISTORY_MESSAGE) {
-                messageContainer.addMessage(smsMessage);
-                System.out.println("Posielam spravu do history containera");
-            }
+        for (MessageManager messageManager : messageManagers) {
+           messageManager.setMessageAsSeen(smsMessage);
         }
     }
 
     @Override
-    public void addMessageContainer(MessageContainer messageContainer) {
-        if (!messageContainers.contains(messageContainer)) {
-            messageContainers.add(messageContainer);
+    public void addMessageManager(MessageManager messageManager) {
+        if (!messageManagers.contains(messageManager)) {
+            messageManagers.add(messageManager);
         }
     }
 
     public void testReturn() {
-        System.out.println("GUIController sa ozyva " + messageContainers.get(0).toString());
+        System.out.println("GUIController sa ozyva " + messageManagers.get(0).toString());
+    }
+
+    public MessageRecencyType getRecencyType() {
+        return recencyType;
     }
 }

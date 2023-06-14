@@ -1,6 +1,7 @@
 package com.example.smsmanagerapp.gui.controller;
 
-import com.example.smsmanagerapp.container.interfaces.MessageContainer;
+import com.example.smsmanagerapp.container.interfaces.MessageManager;
+import com.example.smsmanagerapp.container.type.MessageRecencyType;
 import com.example.smsmanagerapp.data.Data;
 import com.example.smsmanagerapp.data.SMSMessage;
 import com.example.smsmanagerapp.manager.MenuManager;
@@ -26,13 +27,19 @@ public class HistorySMSMessagesController implements Initializable, GUIControlle
 
     @FXML
     private AnchorPane rootPane;
-    private List<MessageContainer> messageContainers;
+    private List<MessageManager> messageManagers;
 
     private MenuControllerImpl menuController;
+    private MessageRecencyType recencyType;
+
+
+    public HistorySMSMessagesController() {
+        messageManagers = new ArrayList<>();
+        recencyType = MessageRecencyType.HISTORY_MESSAGE;
+    }
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        messageContainers = new ArrayList<>();
         menu = MenuManager.getMenuInstance();
         menuController = MenuManager.getMenuController();
         rootPane.getChildren().add(0, menu); // Add menuBox as the first child
@@ -85,15 +92,15 @@ public class HistorySMSMessagesController implements Initializable, GUIControlle
     }
 
     @Override
-    public void addMessageContainer(MessageContainer messageContainer) {
-        this.messageContainers.add(messageContainer);
+    public void addMessageManager(MessageManager messageManager) {
+        this.messageManagers.add(messageManager);
     }
 
     @Override
     public void loadMessages() {
         System.out.println("Loadujem data z history controllera budem vnutry?");
-        for (MessageContainer messageContainer : messageContainers) {
-            for (Data data : messageContainer.getAllMessages()) {
+        for (MessageManager messageManager : messageManagers) {
+            for (Data data : messageManager.getAllSeenMessages()) {
                 System.out.println("YEP");
                 updateGUI(data);
             }
@@ -103,5 +110,9 @@ public class HistorySMSMessagesController implements Initializable, GUIControlle
     @Override
     public void testReturn() {
 
+    }
+
+    public MessageRecencyType getRecencyType() {
+        return recencyType;
     }
 }

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane fx:id="rootPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="651.0" prefWidth="1074.0" style="-fx-background-color: #FFFFFF;" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.smsmanagerapp.gui.controller.HistorySMSMessagesController">
+   <children>
+      <ScrollPane fx:id="scrollPane" layoutX="200.0" layoutY="98.0" prefHeight="526.0" prefWidth="821.0">
+         <content>
+            <VBox fx:id="messageBox" prefHeight="516.0" prefWidth="879.0" />
+         </content>
+      </ScrollPane>
+      <Label layoutX="200.0" layoutY="38.0" prefHeight="44.0" prefWidth="194.0" text="História SMS Správ">
+         <font>
+            <Font name="System Bold Italic" size="21.0" />
+         </font>
+      </Label>
+      <TextField fx:id="searchField" layoutX="463.0" layoutY="48.0" promptText="Hľadať" />
+   </children>
+</AnchorPane>

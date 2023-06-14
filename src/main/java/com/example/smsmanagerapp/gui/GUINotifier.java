@@ -1,5 +1,6 @@
 package com.example.smsmanagerapp.gui;
 
+import com.example.smsmanagerapp.container.type.MessageRecencyType;
 import com.example.smsmanagerapp.data.Data;
 import com.example.smsmanagerapp.gui.controller.GUIController;
 import javafx.scene.Scene;
@@ -34,6 +35,8 @@ public class GUINotifier {
     }
 
     public void newMessage(Data data) {
-        guiController.updateGUI(data);
+        if (guiController.getRecencyType() == MessageRecencyType.NEW_MESSAGE) {
+            guiController.updateGUI(data);
+        }
     }
 }
