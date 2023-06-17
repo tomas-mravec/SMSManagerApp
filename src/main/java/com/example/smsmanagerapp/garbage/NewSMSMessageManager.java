@@ -1,6 +1,6 @@
-package com.example.smsmanagerapp.container;
+package com.example.smsmanagerapp.garbage;
 
-import com.example.smsmanagerapp.DatabaseLoginData;
+import com.example.smsmanagerapp.utility.DatabaseLoginData;
 import com.example.smsmanagerapp.connection.database.DatabaseConnection;
 import com.example.smsmanagerapp.connection.database.MySQLDatabaseConnection;
 import com.example.smsmanagerapp.container.interfaces.MessageManagerObserver;
@@ -10,10 +10,9 @@ import com.example.smsmanagerapp.data.SMSMessage;
 
 
 import java.sql.*;
-import java.util.ArrayList;
 import java.util.List;
 
-public class NewSMSMessageManager implements MessageManagerObserver {
+public class NewSMSMessageManager  {
     //private List<SMSMessage> smsMessages;
     private MessageRecencyType messageRecencyType;
     private DatabaseConnection databaseConnection;
@@ -34,7 +33,6 @@ public class NewSMSMessageManager implements MessageManagerObserver {
             throw new RuntimeException(e);
         }
     }
-    @Override
     public void newMessage(Data data) {
         handleNewMessage(data);
     }
@@ -54,38 +52,31 @@ public class NewSMSMessageManager implements MessageManagerObserver {
         }
     }
 
-    @Override
     public List<? extends Data> getAllMessages() {
         //String query = "SELECT * FROM message";
         return List.of();
     }
 
-    @Override
     public MessageRecencyType getContainerType() {
         return messageRecencyType;
     }
 
-    @Override
-    public void addMessage(Data data) {
-        //smsMessages.add((SMSMessage) data);
-    }
-
-    @Override
     public List<? extends Data> getAllSeenMessages() {
         return null;
     }
 
-    @Override
     public List<? extends Data> getAllNewMessages() {
         return null;
     }
 
-    @Override
     public void setMessageAsSeen(Data data) {
 
     }
 
-    @Override
+    public List<? extends Data> getFilteredMessages(String filter) {
+        return null;
+    }
+
     public void remove(Data data) {
         //smsMessages.remove(data);
     }

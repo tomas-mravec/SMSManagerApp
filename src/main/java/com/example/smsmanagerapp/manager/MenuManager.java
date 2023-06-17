@@ -2,6 +2,7 @@ package com.example.smsmanagerapp.manager;
 
 import com.example.smsmanagerapp.gui.controller.GUIController;
 import com.example.smsmanagerapp.gui.controller.MenuControllerImpl;
+import com.example.smsmanagerapp.utility.ResourceHelper;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.layout.VBox;
 
@@ -30,7 +31,7 @@ public class MenuManager {
     }
 
     private static VBox loadMenu() {
-        FXMLLoader fxmlLoader = new FXMLLoader(MenuManager.class.getResource("/com/example/smsmanagerapp/menu.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(MenuManager.class.getResource(ResourceHelper.getMenuResource()));
         try {
             VBox vBoxMenu = fxmlLoader.load(); // Assign the loaded value to menu
             menuController = fxmlLoader.getController();

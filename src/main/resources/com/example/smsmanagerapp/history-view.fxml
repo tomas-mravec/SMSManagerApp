@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.TextField?>
@@ -20,5 +22,7 @@
          </font>
       </Label>
       <TextField fx:id="searchField" layoutX="463.0" layoutY="48.0" promptText="Hľadať" />
+      <DatePicker fx:id="datePicker" layoutX="680.0" layoutY="48.0" onAction="#dateSelected" />
+      <Button fx:id="resetDateButton" layoutX="863.0" layoutY="48.0" mnemonicParsing="false" onAction="#resetDatePicker" text="Button" />
    </children>
 </AnchorPane>

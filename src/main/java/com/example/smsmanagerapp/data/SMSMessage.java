@@ -79,7 +79,7 @@ public class SMSMessage implements Data {
                     setSender(value);
                     break;
                 case "Recvtime":
-                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
                     setRecvTime(LocalDateTime.parse(value, formatter));
                     break;
             }

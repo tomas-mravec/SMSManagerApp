@@ -1,8 +1,9 @@
 package com.example.smsmanagerapp.gui.controller;
 
 import com.example.smsmanagerapp.container.interfaces.MessageManager;
-import com.example.smsmanagerapp.container.type.MessageRecencyType;
 import com.example.smsmanagerapp.gui.GUINotifier;
+import com.example.smsmanagerapp.setup.NewSceneSetup;
+import com.example.smsmanagerapp.utility.ResourceHelper;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -63,20 +64,9 @@ public class MenuControllerImpl {
     public void switchToNewSMSScene(ActionEvent event) throws IOException {
         System.out.println("Stlacil som tlacidlo, length array je: " + this.messageManagers.size());
         System.out.println("Stlacil som tlacidlo, int list ma length: " + intList.size());
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/com/example/smsmanagerapp/new-sms-view.fxml"));
-        root = fxmlLoader.load();
-        GUIController guiController = fxmlLoader.getController();
-        addMessageManagersToController(guiController);
-        System.out.println("Stlacil som button, nizsie bude container controllera: ");
-        guiController.testReturn();
-        scene = new Scene(root);
-        GUINotifier notifier = GUINotifier.getInstance();
-        notifier.setCurrentScene(scene);
-        notifier.setGuiController(guiController);
-        //stage = (Stage) ((Node)event.getSource()).getScene().getWindow();
-        stage.setScene(scene);
-        guiController.loadMessages();
-        stage.show();
+
+        NewSceneSetup newSceneSetup = new NewSceneSetup(stage, ResourceHelper.getNewSMSSceneResource(), messageManagers);
+        newSceneSetup.switchToNewScene();
     }
 
     private void addMessageManagersToController(GUIController guiController) {
@@ -93,32 +83,11 @@ public class MenuControllerImpl {
 
 
     public void switchToHistoryScene(ActionEvent event) throws IOException {
-
-        //tu treba dat do noveho menu sms container aby mal odkial nacitat spravy alebo treba aby bolo menu vzdy len jedno
-
-//        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/com/example/smsmanagerapp/history-view.fxml"));
-//        root = fxmlLoader.load();
-//        stage = (Stage) ((Node)event.getSource()).getScene().getWindow();
-//        scene = new Scene(root);
-//        stage.setScene(scene);
-//        stage.show();
-
         System.out.println("Stlacil som tlacidlo, length array je: " + this.messageManagers.size());
         System.out.println("Stlacil som tlacidlo, int list ma length: " + intList.size());
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/com/example/smsmanagerapp/history-view.fxml"));
-        root = fxmlLoader.load();
-        GUIController guiController = fxmlLoader.getController();
-        addMessageManagersToController(guiController);
-        System.out.println("Stlacil som button, nizsie bude container controllera: ");
-        guiController.testReturn();
-        scene = new Scene(root);
-        GUINotifier notifier = GUINotifier.getInstance();
-        notifier.setCurrentScene(scene);
-        notifier.setGuiController(guiController);
-        //stage = (Stage) ((Node)event.getSource()).getScene().getWindow();
-        stage.setScene(scene);
-        guiController.loadMessages();
-        stage.show();
+
+        NewSceneSetup newSceneSetup = new NewSceneSetup(stage, ResourceHelper.getHistorySMSSceneResource(), messageManagers);
+        newSceneSetup.switchToNewScene();
     }
 
     public void addMessageManager(MessageManager messageManager) {

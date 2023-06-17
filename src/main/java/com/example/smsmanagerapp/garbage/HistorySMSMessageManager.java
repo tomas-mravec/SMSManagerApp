@@ -1,4 +1,4 @@
-package com.example.smsmanagerapp.container;
+package com.example.smsmanagerapp.garbage;
 
 import com.example.smsmanagerapp.container.interfaces.MessageManager;
 import com.example.smsmanagerapp.container.type.MessageRecencyType;
@@ -8,7 +8,7 @@ import com.example.smsmanagerapp.data.SMSMessage;
 import java.util.ArrayList;
 import java.util.List;
 
-public class HistorySMSMessageManager implements MessageManager {
+public class HistorySMSMessageManager  {
 
     private List<SMSMessage> smsMessages;
     private MessageRecencyType messageRecencyType;
@@ -17,37 +17,32 @@ public class HistorySMSMessageManager implements MessageManager {
         messageRecencyType = MessageRecencyType.HISTORY_MESSAGE;
         smsMessages = new ArrayList<>();
     }
-    @Override
+
     public List<? extends Data> getAllMessages() {
         return smsMessages;
     }
 
-    @Override
     public MessageRecencyType getContainerType() {
         return messageRecencyType;
     }
 
-    @Override
-    public void addMessage(Data data) {
-        smsMessages.add((SMSMessage) data);
-    }
 
-    @Override
     public List<? extends Data> getAllSeenMessages() {
         return null;
     }
 
-    @Override
     public List<? extends Data> getAllNewMessages() {
         return null;
     }
 
-    @Override
     public void setMessageAsSeen(Data data) {
 
     }
 
-    @Override
+    public List<? extends Data> getFilteredMessages(String filter) {
+        return null;
+    }
+
     public void remove(Data data) {
 
     }

@@ -60,7 +60,6 @@ public class TestListener implements MessageListener {
 //
 //                }
 //                System.out.println("KEK");
-//                GUINotifier.getInstance().newMessage(smsMessage);
 //                notifyObservers(smsMessage);
 //                System.out.println("KEK2");
 //            }

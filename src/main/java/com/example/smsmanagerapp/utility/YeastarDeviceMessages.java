@@ -1,4 +1,4 @@
-package com.example.smsmanagerapp;
+package com.example.smsmanagerapp.utility;
 
 public class YeastarDeviceMessages {
     public static String getIncomingSMSNotificationString() {

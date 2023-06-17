@@ -15,6 +15,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 
 import java.net.URL;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -30,6 +31,7 @@ public class NewSMSMessagesController implements GUIController, Initializable {
     private AnchorPane rootPane;
     private List<MessageManager> messageManagers;
     private MessageRecencyType recencyType;
+   private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
 
     public NewSMSMessagesController() {
         messageManagers = new ArrayList<>();
@@ -96,16 +98,16 @@ public class NewSMSMessagesController implements GUIController, Initializable {
                 VBox messageContainer = new VBox();
                 Label label1 = new Label();
                 label1.setText("Odosielateľ: " + smsMessage.getSender());
-//        Label label2 = new Label();
-//        label2.setText("Čas: " + smsMessage.getRecvTime());
+                Label label2 = new Label();
+                label2.setText("Čas: " + smsMessage.getRecvTime().format(formatter));
                 Label label3 = new Label();
                 label3.setText("Správa: " + smsMessage.getContent());
 
 
                 label1.setWrapText(true); // Enable text wrapping
                 label1.setMaxWidth(Double.MAX_VALUE);
-//        label2.setWrapText(true); // Enable text wrapping
-//        label2.setMaxWidth(Double.MAX_VALUE);
+                label2.setWrapText(true); // Enable text wrapping
+                label2.setMaxWidth(Double.MAX_VALUE);
                 label3.setWrapText(true); // Enable text wrapping
                 label3.setMaxWidth(Double.MAX_VALUE);
 
@@ -121,7 +123,7 @@ public class NewSMSMessagesController implements GUIController, Initializable {
                 Separator separator = new Separator();
                 separator.getStyleClass().add("\\css\\message-separator");
 
-                messageContainer.getChildren().addAll(label1, label3, sendToHistory, separator);
+                messageContainer.getChildren().addAll(label1, label3, label2, sendToHistory, separator);
 
 //        messageContainer.setMaxWidth(Double.MAX_VALUE);
 //        messageBox.setMaxWidth(Double.MAX_VALUE);

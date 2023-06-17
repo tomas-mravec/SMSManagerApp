@@ -1,4 +1,4 @@
-package com.example.smsmanagerapp;
+package com.example.smsmanagerapp.garbage;
 
 import com.example.smsmanagerapp.container.interfaces.MessageManager;
 import com.example.smsmanagerapp.gui.controller.GUIController;
