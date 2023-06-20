@@ -1,5 +1,6 @@
 package com.example.smsmanagerapp.listener.test;
 
+import com.example.smsmanagerapp.data.Contact;
 import com.example.smsmanagerapp.data.Data;
 import com.example.smsmanagerapp.data.SMSMessage;
 import com.example.smsmanagerapp.gui.GUINotifier;
@@ -47,7 +48,8 @@ public class TestListener implements MessageListener {
 //            for (int i = 0; i < 10; i++) {
 //                System.out.println(i);
 //                smsMessage = new SMSMessage();
-//                smsMessage.setSender("+041 " + i);
+//                //smsMessage.setSender("+041 " + i);
+//                smsMessage.setContact(new Contact("+031 " + i));
 //                smsMessage.setRecvTime(LocalDateTime.now());
 //                if (i % 2 == 0) {
 //                    smsMessage.setContent("Sprava od mna cislo " + i + "BLABLABLABLABLABLABLABLABLABLABLABLABALBAL");
@@ -60,7 +62,7 @@ public class TestListener implements MessageListener {
 //
 //                }
 //                System.out.println("KEK");
-//                notifyObservers(smsMessage);
+//                //notifyObservers(smsMessage);
 //                System.out.println("KEK2");
 //            }
     }

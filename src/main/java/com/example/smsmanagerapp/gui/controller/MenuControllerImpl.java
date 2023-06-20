@@ -1,6 +1,7 @@
 package com.example.smsmanagerapp.gui.controller;
 
-import com.example.smsmanagerapp.container.interfaces.MessageManager;
+import com.example.smsmanagerapp.container.contact.ContactManager;
+import com.example.smsmanagerapp.container.message.interfaces.MessageManager;
 import com.example.smsmanagerapp.gui.GUINotifier;
 import com.example.smsmanagerapp.setup.NewSceneSetup;
 import com.example.smsmanagerapp.utility.ResourceHelper;
@@ -27,6 +28,7 @@ public class MenuControllerImpl {
     private Button switchToNewMessages;
 
     private List<Integer> intList;
+    private ContactManager contactManager;
 
     public MenuControllerImpl() {
 //        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/com/example/smsmanagerapp/menu.fxml"));
@@ -90,6 +92,19 @@ public class MenuControllerImpl {
         newSceneSetup.switchToNewScene();
     }
 
+    public void switchToCreateNewContact(ActionEvent event) throws IOException {
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/com/example/smsmanagerapp/create-contact-view.fxml"));
+        root = fxmlLoader.load();
+        CreateContactController controller = fxmlLoader.getController();
+        controller.setContactManager(contactManager);
+        scene = new Scene(root);
+        GUINotifier notifier = GUINotifier.getInstance();
+        notifier.setCurrentScene(scene);
+        notifier.setGuiController(null);
+        stage.setScene(scene);
+        stage.show();
+    }
+
     public void addMessageManager(MessageManager messageManager) {
         this.messageManagers.add(messageManager);
         System.out.println("Menu: " + this.toString() +" message container received" + " length of container array is: " + messageManagers.size());
@@ -98,5 +113,9 @@ public class MenuControllerImpl {
 
     public void setStage(Stage stage) {
         this.stage = stage;
+    }
+
+    public void setContactManager(ContactManager contactManager) {
+        this.contactManager = contactManager;
     }
 }

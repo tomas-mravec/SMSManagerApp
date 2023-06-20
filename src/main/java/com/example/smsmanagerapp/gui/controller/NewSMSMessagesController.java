@@ -1,7 +1,8 @@
 package com.example.smsmanagerapp.gui.controller;
 
-import com.example.smsmanagerapp.container.interfaces.MessageManager;
+import com.example.smsmanagerapp.container.message.interfaces.MessageManager;
 import com.example.smsmanagerapp.container.type.MessageRecencyType;
+import com.example.smsmanagerapp.data.Contact;
 import com.example.smsmanagerapp.data.Data;
 import com.example.smsmanagerapp.data.SMSMessage;
 import com.example.smsmanagerapp.manager.MenuManager;
@@ -97,7 +98,12 @@ public class NewSMSMessagesController implements GUIController, Initializable {
 
                 VBox messageContainer = new VBox();
                 Label label1 = new Label();
-                label1.setText("Odosielateľ: " + smsMessage.getSender());
+                Contact contact = smsMessage.getContact();
+                if (contact.getName() != null && !contact.getName().isEmpty()) {
+                    label1.setText("Odosielateľ: " + contact.getName() + "  Číslo: " + smsMessage.getSender());
+                } else {
+                    label1.setText("Odosielateľ: " + smsMessage.getSender());
+                }
                 Label label2 = new Label();
                 label2.setText("Čas: " + smsMessage.getRecvTime().format(formatter));
                 Label label3 = new Label();

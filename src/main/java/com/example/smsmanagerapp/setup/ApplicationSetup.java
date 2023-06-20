@@ -1,15 +1,19 @@
 package com.example.smsmanagerapp.setup;
 
-import com.example.smsmanagerapp.connection.ConnectionEstablisher;
-import com.example.smsmanagerapp.container.SMSMessageManager;
-import com.example.smsmanagerapp.factory.connection.ConnectionEstablisherFactory;
-import com.example.smsmanagerapp.factory.listener.MessageListenerFactory;
+import com.example.smsmanagerapp.connection.database.DatabaseConnection;
+import com.example.smsmanagerapp.connection.database.MySQLDatabaseConnection;
+import com.example.smsmanagerapp.container.contact.ContactManager;
+import com.example.smsmanagerapp.container.contact.ContactManagerImpl;
+import com.example.smsmanagerapp.container.message.SMSMessageManager;
 import com.example.smsmanagerapp.gui.GUINotifier;
 import com.example.smsmanagerapp.gui.controller.GUIController;
 import com.example.smsmanagerapp.listener.MessageListener;
 import com.example.smsmanagerapp.listener.test.TestListener;
 import com.example.smsmanagerapp.manager.MenuManager;
+import com.example.smsmanagerapp.utility.DatabaseLoginData;
 import javafx.scene.Scene;
+
+import java.sql.Connection;
 
 public class ApplicationSetup {
 
@@ -43,10 +47,19 @@ public class ApplicationSetup {
 //             guiController.testReturn();
 //             messageListener.listenForMessages();
 //
-                SMSMessageManager messageManager = new SMSMessageManager();
+                DatabaseConnection databaseConnection = new MySQLDatabaseConnection(
+                DatabaseLoginData.getUrl(),
+                DatabaseLoginData.getUsername(),
+                DatabaseLoginData.getPassword());
+
+                Connection connection = databaseConnection.getConnection();
+                ContactManager contactManager = new ContactManagerImpl(connection);
+                SMSMessageManager messageManager = new SMSMessageManager(connection, contactManager);
                 MessageListener messageListener = new TestListener();
                 messageListener.addObserver(messageManager);
+
                 MenuManager.getMenuController().addMessageManager(messageManager);
+                MenuManager.getMenuController().setContactManager(contactManager);
                 guiController.addMessageManager(messageManager);
                 GUINotifier notifier = GUINotifier.getInstance();
                 notifier.setCurrentScene(scene);

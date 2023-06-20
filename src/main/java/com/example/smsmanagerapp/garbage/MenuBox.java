@@ -1,6 +1,6 @@
 package com.example.smsmanagerapp.garbage;
 
-import com.example.smsmanagerapp.container.interfaces.MessageManager;
+import com.example.smsmanagerapp.container.message.interfaces.MessageManager;
 import com.example.smsmanagerapp.gui.controller.GUIController;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;

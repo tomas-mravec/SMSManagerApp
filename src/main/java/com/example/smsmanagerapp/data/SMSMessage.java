@@ -15,8 +15,11 @@ public class SMSMessage implements Data {
     private String smsc;
     private String content;
     private boolean seen = false;
+    private int contactId;
+    private Contact contact;
 
-    // constructor, getters, and setters omitted for brevity
+
+// constructor, getters, and setters omitted for brevity
 
     public static SMSMessage fromString(String smsString) {
         SMSMessage sms = new SMSMessage();
@@ -89,12 +92,25 @@ public class SMSMessage implements Data {
     private void setPrivilege(String value) {
     }
 
+    public int getContactId() {
+        return contactId;
+    }
+    public void setContactId(int contactId) {
+        this.contactId = contactId;
+    }
+
     public void setId(int id) {
         this.id = id;
     }
 
     private void setGsmSpan(int parseInt) {
 
+    }
+    public Contact getContact() {
+        return contact;
+    }
+    public void setContact(Contact contact) {
+        this.contact = contact;
     }
 
     public void setSender(String sender) {

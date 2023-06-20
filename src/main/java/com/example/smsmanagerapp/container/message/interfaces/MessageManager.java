@@ -1,4 +1,4 @@
-package com.example.smsmanagerapp.container.interfaces;
+package com.example.smsmanagerapp.container.message.interfaces;
 
 import com.example.smsmanagerapp.container.type.MessageRecencyType;
 import com.example.smsmanagerapp.data.Data;

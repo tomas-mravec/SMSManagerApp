@@ -1,6 +1,6 @@
 package com.example.smsmanagerapp.setup;
 
-import com.example.smsmanagerapp.container.interfaces.MessageManager;
+import com.example.smsmanagerapp.container.message.interfaces.MessageManager;
 import com.example.smsmanagerapp.gui.GUINotifier;
 import com.example.smsmanagerapp.gui.controller.GUIController;
 import javafx.fxml.FXMLLoader;
@@ -40,6 +40,8 @@ public class NewSceneSetup {
         guiController.loadMessages();
         stage.show();
     }
+
+
 
     private void addMessageManagersToController(GUIController guiController) {
         System.out.println("Dam vobec nejaky kontainer do controllera?: " + "Dlzka menu: " + this.toString() + " array kontainerov je " + messageManagers.size());

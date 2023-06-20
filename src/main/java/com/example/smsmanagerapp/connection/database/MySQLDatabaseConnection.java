@@ -21,17 +21,14 @@ public class MySQLDatabaseConnection implements DatabaseConnection {
 
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
-
             connection = DriverManager.getConnection(url, username, password);
-
             statement = connection.createStatement();
 
-
-            ResultSet resultSet = statement.executeQuery("select * from message");
-            System.out.println("Som za result setom");
-            while(resultSet.next()) {
-                    System.out.println(resultSet.getInt(1) + " " + resultSet.getString(2) + " " + resultSet.getString(3));
-            }
+//            ResultSet resultSet = statement.executeQuery("select * from message");
+//            System.out.println("Som za result setom");
+//            while(resultSet.next()) {
+//                    System.out.println(resultSet.getInt(1) + " " + resultSet.getString(2) + " " + resultSet.getString(3));
+//            }
 
         } catch (SQLException e) {
             throw new RuntimeException(e);

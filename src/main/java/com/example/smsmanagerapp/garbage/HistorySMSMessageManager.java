@@ -1,6 +1,5 @@
 package com.example.smsmanagerapp.garbage;
 
-import com.example.smsmanagerapp.container.interfaces.MessageManager;
 import com.example.smsmanagerapp.container.type.MessageRecencyType;
 import com.example.smsmanagerapp.data.Data;
 import com.example.smsmanagerapp.data.SMSMessage;

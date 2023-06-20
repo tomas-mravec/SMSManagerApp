@@ -35,7 +35,7 @@ public class GUINotifier {
     }
 
     public void newMessage(Data data) {
-        if (guiController.getRecencyType() == MessageRecencyType.NEW_MESSAGE) {
+        if (guiController != null && guiController.getRecencyType() == MessageRecencyType.NEW_MESSAGE) {
             guiController.updateGUI(data);
         }
     }

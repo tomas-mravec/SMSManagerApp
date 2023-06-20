@@ -7,6 +7,6 @@
    <children>
       <Button mnemonicParsing="false" onAction="#switchToNewSMSScene" prefHeight="35.0" prefWidth="153.0" text="Nové správy" />
       <Button mnemonicParsing="false" onAction="#switchToHistoryScene" prefHeight="39.0" prefWidth="151.0" text="História" />
-      <Button mnemonicParsing="false" prefHeight="39.0" prefWidth="151.0" text="Nový kontakt" />
+      <Button mnemonicParsing="false" onAction="#switchToCreateNewContact" prefHeight="39.0" prefWidth="151.0" text="Nový kontakt" />
    </children>
 </VBox>
