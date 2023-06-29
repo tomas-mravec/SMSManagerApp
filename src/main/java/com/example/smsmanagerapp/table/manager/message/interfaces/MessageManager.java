@@ -1,6 +1,6 @@
-package com.example.smsmanagerapp.container.message.interfaces;
+package com.example.smsmanagerapp.table.manager.message.interfaces;
 
-import com.example.smsmanagerapp.container.type.MessageRecencyType;
+import com.example.smsmanagerapp.table.manager.type.MessageRecencyType;
 import com.example.smsmanagerapp.data.Data;
 
 import java.time.LocalDate;

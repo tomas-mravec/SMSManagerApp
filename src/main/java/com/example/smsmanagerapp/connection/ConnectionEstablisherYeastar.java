@@ -16,6 +16,9 @@ public class ConnectionEstablisherYeastar implements ConnectionEstablisher {
     private BufferedReader in;
     private final String USERNAME;
     private final String SECRET;
+
+
+
     public ConnectionEstablisherYeastar(String ipAddress, int port, String username, String secret) {
         this.IP_ADDRESS = ipAddress;
         this.PORT = port;
@@ -52,7 +55,18 @@ public class ConnectionEstablisherYeastar implements ConnectionEstablisher {
             }
             System.out.println(response);
         }
-        closeResources();
+        //sendMessage();
+
+        //closeResources();
+    }
+
+    private void sendMessage() {
+//        out.println("Action: smscommand");
+//        String command = "";
+//
+//
+//        out.println("Command: " + command);
+
     }
 
     private void closeResources() {
@@ -64,6 +78,14 @@ public class ConnectionEstablisherYeastar implements ConnectionEstablisher {
 //       // out.close();
     }
 
+    @Override
+    public PrintWriter getOutputStream() {
+        return out;
+    }
+
+    public BufferedReader getInputStream() {
+        return in;
+    }
     @Override
     public Optional<Socket> getSocket() {
         return Optional.ofNullable(socket);

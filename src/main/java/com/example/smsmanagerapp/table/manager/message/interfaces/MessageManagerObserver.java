@@ -1,4 +1,4 @@
-package com.example.smsmanagerapp.container.message.interfaces;
+package com.example.smsmanagerapp.table.manager.message.interfaces;
 
 import com.example.smsmanagerapp.interfaces.IMessageListenerObserver;
 

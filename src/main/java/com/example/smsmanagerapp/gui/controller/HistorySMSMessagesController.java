@@ -1,17 +1,20 @@
 package com.example.smsmanagerapp.gui.controller;
 
-import com.example.smsmanagerapp.container.message.interfaces.MessageManager;
-import com.example.smsmanagerapp.container.type.MessageRecencyType;
-import com.example.smsmanagerapp.data.Contact;
+import com.example.smsmanagerapp.table.manager.message.interfaces.MessageManager;
+import com.example.smsmanagerapp.table.manager.type.MessageRecencyType;
+import com.example.smsmanagerapp.data.contact.Contact;
 import com.example.smsmanagerapp.data.Data;
 import com.example.smsmanagerapp.data.SMSMessage;
 import com.example.smsmanagerapp.manager.MenuManager;
+import com.example.smsmanagerapp.utility.ResourceHelper;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.geometry.Insets;
 import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
 import java.net.URL;
@@ -44,13 +47,15 @@ public class HistorySMSMessagesController implements Initializable, GUIControlle
     @FXML
     private DatePicker datePicker;
 
+    @FXML
+    private ScrollPane scrollPane;
+
     private LocalDate dateFilter;
     private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
 
     public HistorySMSMessagesController() {
         messageManagers = new ArrayList<>();
         recencyType = MessageRecencyType.HISTORY_MESSAGE;
-
     }
 
 
@@ -64,7 +69,11 @@ public class HistorySMSMessagesController implements Initializable, GUIControlle
             System.out.println("In button listener new search word is " + newValue);
             searchHistoryBySender(newValue);
         });
-
+//        scrollPane.setStyle("-fx-background-color: white;");
+//        messageBox.setStyle("-fx-background-color: white;");
+        scrollPane.setStyle("-fx-background-color: transparent; -fx-background-insets: 0; -fx-background-color: white;");
+        messageBox.setStyle("-fx-border-color: transparent; -fx-border-width: 0; -fx-background-color: white;");
+        messageBox.getStylesheets().add(getClass().getResource(ResourceHelper.getMessageLabelsStyle()).toExternalForm());
     }
 
     @Override
@@ -75,37 +84,74 @@ public class HistorySMSMessagesController implements Initializable, GUIControlle
                 System.out.println("Som v update gui gui controllera");
                 System.out.println(((SMSMessage) data).getSender() + " Sprava: " + ((SMSMessage) data).getContent());
 
+                boolean contactnameExists = false;
                 VBox messageContainer = new VBox();
-                Label label1 = new Label();
+                VBox downContainer = new VBox();
+                HBox messageDataContainer = new HBox();
+                Label senderLabel = new Label();
+                Label senderNumberLabel = new Label();
+                Label contactNameLabel = new Label();
+                Label contactLabel = new Label();
                 Contact contact = smsMessage.getContact();
+                senderLabel.setText("Číslo: ");
+                senderNumberLabel.setText(smsMessage.getSender());
                 if (contact.getName() != null && !contact.getName().isEmpty()) {
-                    label1.setText("Odosielateľ: " + contact.getName() + "  Číslo: " + smsMessage.getSender());
-                } else {
-                    label1.setText("Odosielateľ: " + smsMessage.getSender());
+                    contactLabel.setText("Kontakt: ");
+                    contactNameLabel.setText(contact.getName());
+                    contactnameExists = true;
                 }
-                Label label2 = new Label();
-                label2.setText("Čas: " + smsMessage.getRecvTime().format(formatter));
-                Label label3 = new Label();
-                label3.setText("Správa: " + smsMessage.getContent());
-//                Label label4 = new Label();
-//                label4.setText("Id správy: " + smsMessage.getId());
 
-                label1.setWrapText(true); // Enable text wrapping
-                label1.setMaxWidth(Double.MAX_VALUE);
-                label2.setWrapText(true); // Enable text wrapping
-                label2.setMaxWidth(Double.MAX_VALUE);
-                label3.setWrapText(true); // Enable text wrapping
-                label3.setMaxWidth(Double.MAX_VALUE);
-//                label4.setWrapText(true); // Enable text wrapping
-//                label4.setMaxWidth(Double.MAX_VALUE);
+                Label timeLabel = new Label();
+                timeLabel.setText("Čas: ");
+                Label timeValueLabel = new Label();
+                timeValueLabel.setText(smsMessage.getRecvTime().format(formatter));
+                Label messageLabel = new Label();
+                messageLabel.setText(smsMessage.getContent());
 
+                senderLabel.getStyleClass().add("label-normal");
+                contactLabel.getStyleClass().add("label-normal");
+                senderNumberLabel.getStyleClass().add("label-normal");
+                contactNameLabel.getStyleClass().add("label-normal");
+                messageLabel.getStyleClass().add("label-normal");
+                timeLabel.getStyleClass().add("label-normal");
+                timeValueLabel.getStyleClass().add("label-normal");
+
+                senderLabel.getStyleClass().add("label-orange");
+                contactLabel.getStyleClass().add("label-orange");
+                timeLabel.getStyleClass().add("label-orange");
+
+                senderNumberLabel.getStyleClass().add("label-right-padding");
+                contactNameLabel.getStyleClass().add("label-right-padding");
+                timeValueLabel.getStyleClass().add("label-right-padding");
+
+                // messageContainer.getStyleClass().add("vbox-spacing");
+                // messageDataContainer.getStyleClass().add("hbox-bottom-margin");
+
+                //downContainer.getStyleClass().add("padding-top");
+                //messageDataContainer.setSpacing(50);
+                messageDataContainer.setPadding(new Insets(20,0,0,0));
+                downContainer.setMargin(downContainer, new Insets(20,0,0,0));
+                downContainer.setSpacing(20);
+//                senderLabel.setWrapText(true); // Enable text wrapping
+//                senderLabel.setMaxWidth(Double.MAX_VALUE);
+//                timeLabel.setWrapText(true); // Enable text wrapping
+//                timeLabel.setMaxWidth(Double.MAX_VALUE);
+//                messageLabel.setWrapText(true); // Enable text wrapping
+//                messageLabel.setMaxWidth(Double.MAX_VALUE);
 
 
                 Separator separator = new Separator();
                 separator.getStyleClass().add("\\css\\message-separator");
 
-                messageContainer.getChildren().addAll(label1, label3, label2, separator);
+                if (contactnameExists) {
+                    messageDataContainer.getChildren().addAll(senderLabel, senderNumberLabel, contactLabel, contactNameLabel, timeLabel, timeValueLabel);
+                } else {
+                    messageDataContainer.getChildren().addAll(senderLabel, senderNumberLabel, timeLabel, timeValueLabel);
+                }
 
+
+                downContainer.getChildren().addAll(messageLabel,separator);
+                messageContainer.getChildren().addAll(messageDataContainer, downContainer);
 //        messageContainer.setMaxWidth(Double.MAX_VALUE);
 //        messageBox.setMaxWidth(Double.MAX_VALUE);
 //        VBox.setVgrow(messageBox, Priority.ALWAYS);

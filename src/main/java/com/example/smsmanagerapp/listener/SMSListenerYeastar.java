@@ -73,6 +73,7 @@ public class SMSListenerYeastar implements MessageListener {
 //                    System.out.println("Sprava od " + sms.getSender() + " content " + sms.getContent());
 
                 }
+                System.out.println("Response je null!!!!!");
             } catch (Exception e) {
                 throw new RuntimeException();
             }

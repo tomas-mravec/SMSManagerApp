@@ -12,4 +12,7 @@ public class ResourceHelper {
     public static String getMenuResource() {
         return "/com/example/smsmanagerapp/menu.fxml";
     }
+    public static String getMessageLabelsStyle() {
+        return "/com/example/smsmanagerapp/message-style.css";
+    }
 }

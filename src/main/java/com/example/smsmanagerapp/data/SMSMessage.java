@@ -1,5 +1,7 @@
 package com.example.smsmanagerapp.data;
 
+import com.example.smsmanagerapp.data.contact.Contact;
+
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -79,10 +81,10 @@ public class SMSMessage implements Data {
                     setContent(value);
                     break;
                 case "Sender":
-                    setSender(value);
+                    setContact(new Contact(value));
                     break;
                 case "Recvtime":
-                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
+                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
                     setRecvTime(LocalDateTime.parse(value, formatter));
                     break;
             }

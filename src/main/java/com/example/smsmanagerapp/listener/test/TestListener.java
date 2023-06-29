@@ -1,17 +1,11 @@
 package com.example.smsmanagerapp.listener.test;
 
-import com.example.smsmanagerapp.data.Contact;
 import com.example.smsmanagerapp.data.Data;
-import com.example.smsmanagerapp.data.SMSMessage;
-import com.example.smsmanagerapp.gui.GUINotifier;
 import com.example.smsmanagerapp.interfaces.IMessageListenerObserver;
 import com.example.smsmanagerapp.listener.MessageListener;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 public class TestListener implements MessageListener {
 

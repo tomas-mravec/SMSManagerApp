@@ -1,18 +1,22 @@
 package com.example.smsmanagerapp.gui.controller;
 
-import com.example.smsmanagerapp.container.message.interfaces.MessageManager;
-import com.example.smsmanagerapp.container.type.MessageRecencyType;
-import com.example.smsmanagerapp.data.Contact;
+import com.example.smsmanagerapp.table.manager.message.interfaces.MessageManager;
+import com.example.smsmanagerapp.table.manager.type.MessageRecencyType;
+import com.example.smsmanagerapp.data.contact.Contact;
 import com.example.smsmanagerapp.data.Data;
 import com.example.smsmanagerapp.data.SMSMessage;
 import com.example.smsmanagerapp.manager.MenuManager;
+import com.example.smsmanagerapp.utility.ResourceHelper;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.geometry.Insets;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Separator;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
 import java.net.URL;
@@ -30,9 +34,12 @@ public class NewSMSMessagesController implements GUIController, Initializable {
     private MenuControllerImpl menuController;
     @FXML
     private AnchorPane rootPane;
+
+    @FXML
+    private ScrollPane scrollPane;
     private List<MessageManager> messageManagers;
     private MessageRecencyType recencyType;
-   private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
+    private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
 
     public NewSMSMessagesController() {
         messageManagers = new ArrayList<>();
@@ -41,43 +48,14 @@ public class NewSMSMessagesController implements GUIController, Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        //Loads menu.fxml, then loads MenuBox root node into menuBox variable which is then set as child of rootPane
-
-//        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/com/example/smsmanagerapp/menu.fxml"));
-//        try {
-//            menu = fxmlLoader.load(); // Assign the loaded value to menu
-//            menuController = fxmlLoader.getController(); //assign controller of menu
-//
-//            //tak nakoniec loader vytvori dve instancie, jednu ako root node co reprezentuje menu box, a dalsi menu box co je controller
-//
-//        } catch (IOException exception) {
-//            throw new RuntimeException(exception);
-//        }
-
-        //menuBox = MenuBox.getInstance();
         menu = MenuManager.getMenuInstance();
         menuController = MenuManager.getMenuController();
-        rootPane.getChildren().add(0, menu); // Add menuBox as the first child
+        rootPane.getChildren().add(0, menu);
+        scrollPane.setStyle("-fx-background-color: transparent; -fx-background-insets: 0; -fx-background-color: white;");
+        messageBox.setStyle("-fx-border-color: transparent; -fx-border-width: 0; -fx-background-color: white;");
+        messageBox.getStylesheets().add(getClass().getResource(ResourceHelper.getMessageLabelsStyle()).toExternalForm());
     }
 
-
-
-
-    // Urobime SMSMessage singleton a mozeme ho akcessnut hocikde, a vzdy ked vytvorime novy kontroler tak si ho vypytame
-    //mozeme urobit novy sms container kde budu ulozene nove spravy a ten kontainer nacitame do new sms messages controller hmmmmm
-
-
-
-
-
-
-
-
-
-//    private void addMessageContainerToMenu(MessageContainer messageContainer) {
-//        System.out.println("GUIController pridava message container do menu");
-//        menuController.addMessageContainer(messageContainer);
-//    }
 
     public void loadMessages() {
         System.out.println("Loadujem data z gui controllera");
@@ -96,26 +74,60 @@ public class NewSMSMessagesController implements GUIController, Initializable {
                 System.out.println("Som v update gui gui controllera");
                 System.out.println(((SMSMessage) data).getSender() + " Sprava: " + ((SMSMessage) data).getContent());
 
+                boolean contactnameExists = false;
                 VBox messageContainer = new VBox();
-                Label label1 = new Label();
+                VBox downContainer = new VBox();
+                HBox messageDataContainer = new HBox();
+                Label senderLabel = new Label();
+                Label senderNumberLabel = new Label();
+                Label contactNameLabel = new Label();
+                Label contactLabel = new Label();
                 Contact contact = smsMessage.getContact();
+                senderLabel.setText("Číslo: ");
+                senderNumberLabel.setText(contact.getNumber());
                 if (contact.getName() != null && !contact.getName().isEmpty()) {
-                    label1.setText("Odosielateľ: " + contact.getName() + "  Číslo: " + smsMessage.getSender());
-                } else {
-                    label1.setText("Odosielateľ: " + smsMessage.getSender());
+                    contactLabel.setText("Kontakt: ");
+                    contactNameLabel.setText(contact.getName());
+                    contactnameExists = true;
                 }
-                Label label2 = new Label();
-                label2.setText("Čas: " + smsMessage.getRecvTime().format(formatter));
-                Label label3 = new Label();
-                label3.setText("Správa: " + smsMessage.getContent());
 
+                Label timeLabel = new Label();
+                timeLabel.setText("Čas: ");
+                Label timeValueLabel = new Label();
+                timeValueLabel.setText(smsMessage.getRecvTime().format(formatter));
+                Label messageLabel = new Label();
+                messageLabel.setText(smsMessage.getContent());
 
-                label1.setWrapText(true); // Enable text wrapping
-                label1.setMaxWidth(Double.MAX_VALUE);
-                label2.setWrapText(true); // Enable text wrapping
-                label2.setMaxWidth(Double.MAX_VALUE);
-                label3.setWrapText(true); // Enable text wrapping
-                label3.setMaxWidth(Double.MAX_VALUE);
+                senderLabel.getStyleClass().add("label-normal");
+                contactLabel.getStyleClass().add("label-normal");
+                senderNumberLabel.getStyleClass().add("label-normal");
+                contactNameLabel.getStyleClass().add("label-normal");
+                messageLabel.getStyleClass().add("label-normal");
+                timeLabel.getStyleClass().add("label-normal");
+                timeValueLabel.getStyleClass().add("label-normal");
+
+                senderLabel.getStyleClass().add("label-orange");
+                contactLabel.getStyleClass().add("label-orange");
+                timeLabel.getStyleClass().add("label-orange");
+
+                senderNumberLabel.getStyleClass().add("label-right-padding");
+                contactNameLabel.getStyleClass().add("label-right-padding");
+                timeValueLabel.getStyleClass().add("label-right-padding");
+
+               // messageContainer.getStyleClass().add("vbox-spacing");
+               // messageDataContainer.getStyleClass().add("hbox-bottom-margin");
+
+                //downContainer.getStyleClass().add("padding-top");
+                //messageDataContainer.setSpacing(50);
+                messageDataContainer.setPadding(new Insets(20,0,0,0));
+                downContainer.setMargin(downContainer, new Insets(20,0,0,0));
+                downContainer.setSpacing(20);
+//                senderLabel.setWrapText(true); // Enable text wrapping
+//                senderLabel.setMaxWidth(Double.MAX_VALUE);
+//                timeLabel.setWrapText(true); // Enable text wrapping
+//                timeLabel.setMaxWidth(Double.MAX_VALUE);
+//                messageLabel.setWrapText(true); // Enable text wrapping
+//                messageLabel.setMaxWidth(Double.MAX_VALUE);
 
 
                 Button sendToHistory = new Button();
@@ -127,10 +139,25 @@ public class NewSMSMessagesController implements GUIController, Initializable {
                 });
 
                 Separator separator = new Separator();
-                separator.getStyleClass().add("\\css\\message-separator");
+//                separator.getStylesheets().add(getClass().getResource("/com/example/smsmanagerapp/css/message-separator.css").toExternalForm());
+//                separator.getStyleClass().add("message-separator");
+                 //separator.setStyle("-fx-border-color:#D2691E;-fx-border-width:5;");
+//                separator.setStyle(""
+//                        + "-fx-border-width: 3px;"
+//                        + "-fx-border-color: black;"
+//                        + "-fx-padding: 0px;"
+//                        + "");
 
-                messageContainer.getChildren().addAll(label1, label3, label2, sendToHistory, separator);
 
+                if (contactnameExists) {
+                    messageDataContainer.getChildren().addAll(senderLabel, senderNumberLabel, contactLabel, contactNameLabel, timeLabel, timeValueLabel);
+                } else {
+                    messageDataContainer.getChildren().addAll(senderLabel, senderNumberLabel, timeLabel, timeValueLabel);
+                }
+
+
+                downContainer.getChildren().addAll(messageLabel, sendToHistory, separator);
+                messageContainer.getChildren().addAll(messageDataContainer, downContainer);
 //        messageContainer.setMaxWidth(Double.MAX_VALUE);
 //        messageBox.setMaxWidth(Double.MAX_VALUE);
 //        VBox.setVgrow(messageBox, Priority.ALWAYS);

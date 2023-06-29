@@ -1,4 +1,4 @@
-package com.example.smsmanagerapp.data;
+package com.example.smsmanagerapp.data.contact;
 
 public class Contact {
 

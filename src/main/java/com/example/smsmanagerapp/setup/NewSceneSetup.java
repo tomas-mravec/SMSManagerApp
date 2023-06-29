@@ -1,6 +1,6 @@
 package com.example.smsmanagerapp.setup;
 
-import com.example.smsmanagerapp.container.message.interfaces.MessageManager;
+import com.example.smsmanagerapp.table.manager.message.interfaces.MessageManager;
 import com.example.smsmanagerapp.gui.GUINotifier;
 import com.example.smsmanagerapp.gui.controller.GUIController;
 import javafx.fxml.FXMLLoader;

@@ -1,12 +1,10 @@
-package com.example.smsmanagerapp.container.message;
+package com.example.smsmanagerapp.table.manager.message;
 
-import com.example.smsmanagerapp.container.contact.ContactManager;
-import com.example.smsmanagerapp.data.Contact;
-import com.example.smsmanagerapp.utility.DatabaseLoginData;
+import com.example.smsmanagerapp.table.manager.contact.ContactManager;
+import com.example.smsmanagerapp.data.contact.Contact;
+import com.example.smsmanagerapp.table.manager.message.interfaces.MessageManager;
+import com.example.smsmanagerapp.table.manager.type.MessageRecencyType;
 import com.example.smsmanagerapp.connection.database.DatabaseConnection;
-import com.example.smsmanagerapp.connection.database.MySQLDatabaseConnection;
-import com.example.smsmanagerapp.container.message.interfaces.MessageManager;
-import com.example.smsmanagerapp.container.type.MessageRecencyType;
 import com.example.smsmanagerapp.data.Data;
 import com.example.smsmanagerapp.data.SMSMessage;
 import com.example.smsmanagerapp.gui.GUINotifier;
@@ -59,6 +57,7 @@ public class SMSMessageManager implements MessageManager, IMessageListenerObserv
             PreparedStatement preparedStatement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
             //preparedStatement.setString(1,smsMessage.getSender());
             preparedStatement.setString(1, smsMessage.getContent());
+
             preparedStatement.setTimestamp(2, Timestamp.valueOf(smsMessage.getRecvTime()));
             preparedStatement.setBoolean(3, smsMessage.isSeen());
             preparedStatement.setString(4, smsMessage.getContact().getNumber());

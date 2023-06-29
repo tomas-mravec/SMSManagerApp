@@ -1,18 +1,15 @@
 package com.example.smsmanagerapp.gui.controller;
 
-import com.example.smsmanagerapp.container.contact.ContactManager;
-import com.example.smsmanagerapp.data.Contact;
-import com.example.smsmanagerapp.data.SMSMessage;
+import com.example.smsmanagerapp.table.manager.contact.ContactManager;
+import com.example.smsmanagerapp.data.contact.Contact;
 import com.example.smsmanagerapp.manager.MenuManager;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.Separator;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
 import java.net.URL;
@@ -22,6 +19,9 @@ public class CreateContactController implements Initializable {
 
     @FXML
     private Button createContactButton;
+
+    @FXML
+    private Label conditionNotMetLabel;
 
     @FXML
     private TextField contactField;
@@ -36,19 +36,35 @@ public class CreateContactController implements Initializable {
     private VBox contactBox;
     private ContactManager contactManager;
 
+    @FXML
+    private ScrollPane scrollPane;
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         menu = MenuManager.getMenuInstance();
         rootPane.getChildren().add(0, menu);
+        conditionNotMetLabel.setVisible(false);
+        scrollPane.setStyle("-fx-background-color: transparent; -fx-background-insets: 0; -fx-background-color: white;");
+        contactBox.setStyle("-fx-border-color: transparent; -fx-border-width: 0; -fx-background-color: white;");
     }
 
     public void createContact(ActionEvent event) {
         String number = numberField.getText();
         String contactName = contactField.getText();
-        numberField.setText(null);
-        contactField.setText(null);
-        contactManager.updateContactName(number, contactName);
-        loadContactsWithName();
+        int affectedRows = contactManager.updateContactName(number, contactName);
+        if(contactName == null || contactName.isEmpty()) {
+            conditionNotMetLabel.setText("Meno nemôže byť prázdne");
+            conditionNotMetLabel.setVisible(true);
+        }
+       else if (affectedRows == 1) {
+            numberField.setText(null);
+            contactField.setText(null);
+            conditionNotMetLabel.setVisible(false);
+           loadContactsWithName();
+       } else if (affectedRows == 0){
+            conditionNotMetLabel.setText("Zadané telefónne číslo nebolo nájdené");
+            conditionNotMetLabel.setVisible(true);
+       }
     }
 
     private void loadContactsWithName() {
@@ -60,9 +76,16 @@ public class CreateContactController implements Initializable {
 
     private void showContact(Contact contact) {
         Platform.runLater(() -> {
-            Label label1 = new Label();
-            label1.setText(contact.getNumber() + "           " + contact.getName());
-            contactBox.getChildren().add(label1);
+            HBox contactData = new HBox();
+            contactData.setSpacing(50);
+            Label numberLabel = new Label();
+            Label nameLabel = new Label();
+            nameLabel.setText(contact.getName());
+            nameLabel.setStyle("-fx-font-size: 19px;");
+            numberLabel.setText(contact.getNumber());
+            numberLabel.setStyle("-fx-font-size: 19px;");
+            contactData.getChildren().addAll(numberLabel, nameLabel);
+            contactBox.getChildren().add(contactData);
         });
     }
 

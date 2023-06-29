@@ -19,6 +19,10 @@ module com.example.smsmanagerapp {
     opens com.example.smsmanagerapp.garbage to javafx.fxml;
     exports com.example.smsmanagerapp.utility;
     opens com.example.smsmanagerapp.utility to javafx.fxml;
+    exports com.example.smsmanagerapp.sender;
+    opens com.example.smsmanagerapp.sender to javafx.fxml;
+    exports com.example.smsmanagerapp.data.contact;
+    opens com.example.smsmanagerapp.data.contact to javafx.fxml;
     //opens com.example.smsmanagerapp.custom.control to javafx.fxml;
 
 }

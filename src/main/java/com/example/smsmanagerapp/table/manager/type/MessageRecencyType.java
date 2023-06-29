@@ -1,4 +1,4 @@
-package com.example.smsmanagerapp.container.type;
+package com.example.smsmanagerapp.table.manager.type;
 
 public enum MessageRecencyType {
     NEW_MESSAGE,

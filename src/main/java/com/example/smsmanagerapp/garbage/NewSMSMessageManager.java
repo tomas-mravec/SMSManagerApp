@@ -3,7 +3,7 @@ package com.example.smsmanagerapp.garbage;
 import com.example.smsmanagerapp.utility.DatabaseLoginData;
 import com.example.smsmanagerapp.connection.database.DatabaseConnection;
 import com.example.smsmanagerapp.connection.database.MySQLDatabaseConnection;
-import com.example.smsmanagerapp.container.type.MessageRecencyType;
+import com.example.smsmanagerapp.table.manager.type.MessageRecencyType;
 import com.example.smsmanagerapp.data.Data;
 import com.example.smsmanagerapp.data.SMSMessage;
 
