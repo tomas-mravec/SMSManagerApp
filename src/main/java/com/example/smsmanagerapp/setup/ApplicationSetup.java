@@ -3,14 +3,15 @@ package com.example.smsmanagerapp.setup;
 import com.example.smsmanagerapp.connection.ConnectionEstablisher;
 import com.example.smsmanagerapp.connection.database.DatabaseConnection;
 import com.example.smsmanagerapp.connection.database.MySQLDatabaseConnection;
+import com.example.smsmanagerapp.gui.controller.container.SceneControllerContainerImpl;
 import com.example.smsmanagerapp.table.manager.contact.ContactManager;
 import com.example.smsmanagerapp.table.manager.contact.ContactManagerImpl;
 import com.example.smsmanagerapp.table.manager.group.contact.GroupContactManagerImpl;
 import com.example.smsmanagerapp.table.manager.message.SMSMessageManager;
 import com.example.smsmanagerapp.factory.connection.ConnectionEstablisherFactory;
 import com.example.smsmanagerapp.factory.listener.MessageListenerFactory;
-import com.example.smsmanagerapp.gui.GUINotifier;
-import com.example.smsmanagerapp.gui.controller.GUIController;
+import com.example.smsmanagerapp.gui.notifier.GUINotifier;
+import com.example.smsmanagerapp.gui.controller.interfaces.GUIControllerUpdateable;
 import com.example.smsmanagerapp.listener.MessageListener;
 import com.example.smsmanagerapp.manager.MenuManager;
 import com.example.smsmanagerapp.sender.MessageSender;
@@ -24,9 +25,9 @@ import java.sql.Connection;
 public class ApplicationSetup {
 
     private Scene scene;
-    private GUIController guiController;
+    private GUIControllerUpdateable guiController;
 
-    public ApplicationSetup(Scene scene, GUIController guiController) {
+    public ApplicationSetup(Scene scene, GUIControllerUpdateable guiController) {
         this.scene = scene;
         this.guiController = guiController;
     }
@@ -101,7 +102,12 @@ public class ApplicationSetup {
             ContactManager contactManager = new ContactManagerImpl(connection);
             SMSMessageManager messageManager = new SMSMessageManager(connection, contactManager);
             MessageSender messageSender = new MessageSenderYeastar(connectionEstablisher.getOutputStream());
-            MessageListener messageListener = MessageListenerFactory.create(TYPE, connectionEstablisher.getSocket().get());
+
+
+            MessageListener messageListener = MessageListenerFactory.create(TYPE,
+                    connectionEstablisher.getSocket().get(),
+                    connectionEstablisher.getOutputStream(),
+                    connectionEstablisher.getInputStream());
             messageListener.addObserver(messageManager);
 
             MenuManager.getMenuController().addMessageManager(messageManager);
@@ -110,6 +116,12 @@ public class ApplicationSetup {
             MenuManager.getMenuController().setConnection(connection);
             MenuManager.getMenuController().setMessageOutManager(new MessageOutImpl(connection));
             MenuManager.getMenuController().setGroupContactManager(new GroupContactManagerImpl(connection));
+
+            SceneControllerContainerImpl sceneControllerContainer = new SceneControllerContainerImpl();
+            setScenes(sceneControllerContainer);
+            MenuManager.getMenuController().setSceneControllerContainer(sceneControllerContainer);
+
+            //pri refactoringu vytvorit triedu od ktorej si bude menu pytat managerov
 
             guiController.addMessageManager(messageManager);
             GUINotifier notifier = GUINotifier.getInstance();
@@ -135,5 +147,10 @@ public class ApplicationSetup {
         } else {
             throw new RuntimeException();
         }
+    }
+
+    private void setScenes(SceneControllerContainerImpl sceneControllerContainer) {
+        //newMessagesScene = fxmlLoad..............
+        // sceneControllerCOntainer.setNewMessagesScene(newMessagesScene)
     }
 }

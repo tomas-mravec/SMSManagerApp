@@ -1,5 +1,6 @@
 package com.example.smsmanagerapp.gui.controller;
 
+import com.example.smsmanagerapp.gui.controller.interfaces.GUIControllerUpdateable;
 import com.example.smsmanagerapp.table.manager.message.interfaces.MessageManager;
 import com.example.smsmanagerapp.table.manager.type.MessageRecencyType;
 import com.example.smsmanagerapp.data.contact.Contact;
@@ -24,7 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
-public class HistorySMSMessagesController implements Initializable, GUIController {
+public class HistorySMSMessagesController implements Initializable, GUIControllerUpdateable {
 
     private VBox menu;
 

@@ -1,7 +1,7 @@
 package com.example.smsmanagerapp.garbage;
 
 import com.example.smsmanagerapp.table.manager.message.interfaces.MessageManager;
-import com.example.smsmanagerapp.gui.controller.GUIController;
+import com.example.smsmanagerapp.gui.controller.interfaces.GUIControllerUpdateable;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -81,7 +81,7 @@ public class MenuBox extends VBox{
         //stage.show();
     }
 
-    private void addMessageContainersToController(GUIController guiController) {
+    private void addMessageContainersToController(GUIControllerUpdateable guiController) {
         System.out.println("Dam vobec nejaky kontainer do controllera?: " + "Dlzka menu: " + this.toString() + " array kontainerov je " + messageManagers.size());
         for (MessageManager messageManager : messageManagers) {
             System.out.println("YEP");

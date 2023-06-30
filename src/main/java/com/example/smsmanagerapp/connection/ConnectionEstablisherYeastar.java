@@ -27,9 +27,17 @@ public class ConnectionEstablisherYeastar implements ConnectionEstablisher {
         setUpConnection();
     }
 
-    private void setUpConnection() {
+    public void setUpConnection() {
         try {
-            //setting up socket
+            if (socket != null) {
+                socket.close();
+            }
+            if (out != null) {
+                out.close();
+            }
+            if (in != null) {
+                in.close();
+            }
             socket = new Socket(IP_ADDRESS, PORT);
             out = new PrintWriter(socket.getOutputStream(), true);
             in = new BufferedReader(new InputStreamReader(socket.getInputStream()));

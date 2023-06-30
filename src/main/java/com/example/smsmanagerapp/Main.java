@@ -1,6 +1,6 @@
 package com.example.smsmanagerapp;
 
-import com.example.smsmanagerapp.gui.controller.GUIController;
+import com.example.smsmanagerapp.gui.controller.interfaces.GUIControllerUpdateable;
 import com.example.smsmanagerapp.manager.MenuManager;
 import com.example.smsmanagerapp.setup.ApplicationSetup;
 import javafx.application.Application;
@@ -21,7 +21,7 @@ public class Main extends Application {
         stage.setScene(scene);
         stage.show();
         MenuManager.getMenuController().setStage(stage);
-        GUIController guiController = fxmlLoader.getController();
+        GUIControllerUpdateable guiController = fxmlLoader.getController();
         Platform.runLater(() -> {
             ApplicationSetup setup = new ApplicationSetup(scene, guiController);
             setup.setUp();

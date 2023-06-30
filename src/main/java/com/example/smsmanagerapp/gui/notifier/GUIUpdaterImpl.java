@@ -1,20 +1,20 @@
-package com.example.smsmanagerapp.gui;
+package com.example.smsmanagerapp.gui.notifier;
 
 import com.example.smsmanagerapp.data.Data;
-import com.example.smsmanagerapp.gui.controller.GUIController;
+import com.example.smsmanagerapp.gui.controller.interfaces.GUIControllerUpdateable;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class GUIUpdaterImpl implements GUIUpdater{
 
-    private List<GUIController> guiControllers;
+    private List<GUIControllerUpdateable> guiControllers;
 
     public GUIUpdaterImpl() {
         this.guiControllers = new ArrayList<>();
     }
 
-    public void addGUIController(GUIController guiController) {
+    public void addGUIController(GUIControllerUpdateable guiController) {
         guiControllers.add(guiController);
     }
     @Override
@@ -24,7 +24,7 @@ public class GUIUpdaterImpl implements GUIUpdater{
 
     private void handleNewMessage(Data data) {
         System.out.println("Som v handle Message guiupdatera");
-        for (GUIController guiController : guiControllers) {
+        for (GUIControllerUpdateable guiController : guiControllers) {
             System.out.println("1--");
             guiController.updateGUI(data);
             System.out.println("2--");

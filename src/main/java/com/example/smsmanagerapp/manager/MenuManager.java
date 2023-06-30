@@ -1,6 +1,5 @@
 package com.example.smsmanagerapp.manager;
 
-import com.example.smsmanagerapp.gui.controller.GUIController;
 import com.example.smsmanagerapp.gui.controller.MenuControllerImpl;
 import com.example.smsmanagerapp.utility.ResourceHelper;
 import javafx.fxml.FXMLLoader;

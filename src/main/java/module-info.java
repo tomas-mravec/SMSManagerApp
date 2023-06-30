@@ -23,6 +23,10 @@ module com.example.smsmanagerapp {
     opens com.example.smsmanagerapp.sender to javafx.fxml;
     exports com.example.smsmanagerapp.data.contact;
     opens com.example.smsmanagerapp.data.contact to javafx.fxml;
+    exports com.example.smsmanagerapp.gui.controller.interfaces;
+    opens com.example.smsmanagerapp.gui.controller.interfaces to javafx.fxml;
+    exports com.example.smsmanagerapp.gui.notifier;
+    opens com.example.smsmanagerapp.gui.notifier to javafx.fxml;
     //opens com.example.smsmanagerapp.custom.control to javafx.fxml;
 
 }

@@ -1,10 +1,12 @@
 package com.example.smsmanagerapp.gui.controller;
 
+import com.example.smsmanagerapp.gui.controller.container.SceneControllerContainer;
+import com.example.smsmanagerapp.gui.controller.interfaces.GUIControllerUpdateable;
 import com.example.smsmanagerapp.table.manager.contact.ContactManager;
 import com.example.smsmanagerapp.table.manager.contact.ContactManagerImpl;
 import com.example.smsmanagerapp.table.manager.group.contact.GroupContactManager;
 import com.example.smsmanagerapp.table.manager.message.interfaces.MessageManager;
-import com.example.smsmanagerapp.gui.GUINotifier;
+import com.example.smsmanagerapp.gui.notifier.GUINotifier;
 import com.example.smsmanagerapp.manager.ButtonStyleManager;
 import com.example.smsmanagerapp.sender.MessageSender;
 import com.example.smsmanagerapp.setup.NewSceneSetup;
@@ -45,12 +47,15 @@ public class MenuControllerImpl {
     private MessageOutManager messageOutManager;
 
     private Connection connection;
+    private SceneControllerContainer sceneControllerContainer;
 
     public MenuControllerImpl() {
         messageManagers = new ArrayList<>();
         intList = new ArrayList<>();
 
     }
+
+
     @FXML
     private void initialize() {
         buttonStyleManager = new ButtonStyleManager();
@@ -89,7 +94,7 @@ public class MenuControllerImpl {
         }
     }
 
-    private void addMessageManagersToController(GUIController guiController) {
+    private void addMessageManagersToController(GUIControllerUpdateable guiController) {
         System.out.println("Dam vobec nejaky kontainer do controllera?: " + "Dlzka menu: " + this.toString() + " array kontainerov je " + messageManagers.size());
         for (MessageManager messageManager : messageManagers) {
                 guiController.addMessageManager(messageManager);
@@ -180,6 +185,14 @@ public class MenuControllerImpl {
             switchToContactsButton.setStyle(buttonStyleManager.getOriginalStyle(switchToContactsButton) + "-fx-background-color: #ADD8E6;");
    }
 
+
+    public SceneControllerContainer getSceneControllerContainer() {
+        return sceneControllerContainer;
+    }
+
+    public void setSceneControllerContainer(SceneControllerContainer sceneControllerContainer) {
+        this.sceneControllerContainer = sceneControllerContainer;
+    }
 
     public void setStage(Stage stage) {
         this.stage = stage;

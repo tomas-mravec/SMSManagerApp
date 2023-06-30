@@ -1,8 +1,8 @@
 package com.example.smsmanagerapp.setup;
 
 import com.example.smsmanagerapp.table.manager.message.interfaces.MessageManager;
-import com.example.smsmanagerapp.gui.GUINotifier;
-import com.example.smsmanagerapp.gui.controller.GUIController;
+import com.example.smsmanagerapp.gui.notifier.GUINotifier;
+import com.example.smsmanagerapp.gui.controller.interfaces.GUIControllerUpdateable;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -27,7 +27,7 @@ public class NewSceneSetup {
     public void switchToNewScene() throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(resource));
         root = fxmlLoader.load();
-        GUIController guiController = fxmlLoader.getController();
+        GUIControllerUpdateable guiController = fxmlLoader.getController();
         addMessageManagersToController(guiController);
         System.out.println("Stlacil som button, nizsie bude container controllera: ");
         guiController.testReturn();
@@ -43,7 +43,7 @@ public class NewSceneSetup {
 
 
 
-    private void addMessageManagersToController(GUIController guiController) {
+    private void addMessageManagersToController(GUIControllerUpdateable guiController) {
         System.out.println("Dam vobec nejaky kontainer do controllera?: " + "Dlzka menu: " + this.toString() + " array kontainerov je " + messageManagers.size());
         for (MessageManager messageManager : messageManagers) {
             guiController.addMessageManager(messageManager);

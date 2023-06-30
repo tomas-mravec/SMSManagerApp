@@ -3,6 +3,7 @@ package com.example.smsmanagerapp.listener.test;
 import com.example.smsmanagerapp.data.Data;
 import com.example.smsmanagerapp.interfaces.IMessageListenerObserver;
 import com.example.smsmanagerapp.listener.MessageListener;
+import com.example.smsmanagerapp.response.ResponseContainer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -59,5 +60,10 @@ public class TestListener implements MessageListener {
 //                //notifyObservers(smsMessage);
 //                System.out.println("KEK2");
 //            }
+    }
+
+    @Override
+    public ResponseContainer getResponseContainer() {
+        return null;
     }
 }

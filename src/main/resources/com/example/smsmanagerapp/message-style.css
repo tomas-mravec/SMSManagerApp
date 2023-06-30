@@ -1,0 +1,22 @@
+.label-normal {
+    -fx-font-size: 19px;
+}
+.label-orange {
+   -fx-text-fill: orange;
+}
+
+.vbox-spacing {
+    -fx-padding: 0 0 50px 0;
+}
+
+/*.hbox-bottom-margin {
+    -fx-margin: 0 0 50px 0;
+}*/
+
+.label-right-padding {
+    -fx-padding: 0 26px 0 0;
+}
+
+.padding-top {
+    -fx-padding-top: 30px;
+}

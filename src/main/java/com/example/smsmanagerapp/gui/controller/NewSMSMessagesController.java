@@ -1,5 +1,6 @@
 package com.example.smsmanagerapp.gui.controller;
 
+import com.example.smsmanagerapp.gui.controller.interfaces.GUIControllerUpdateable;
 import com.example.smsmanagerapp.table.manager.message.interfaces.MessageManager;
 import com.example.smsmanagerapp.table.manager.type.MessageRecencyType;
 import com.example.smsmanagerapp.data.contact.Contact;
@@ -25,7 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
-public class NewSMSMessagesController implements GUIController, Initializable {
+public class NewSMSMessagesController implements GUIControllerUpdateable, Initializable {
 
     @FXML
     private VBox messageBox;
@@ -72,7 +73,7 @@ public class NewSMSMessagesController implements GUIController, Initializable {
             Platform.runLater(() -> {
                 SMSMessage smsMessage = (SMSMessage) data;
                 System.out.println("Som v update gui gui controllera");
-                System.out.println(((SMSMessage) data).getSender() + " Sprava: " + ((SMSMessage) data).getContent());
+                System.out.println(((SMSMessage) data).getContact().getNumber() + " Sprava: " + ((SMSMessage) data).getContent());
 
                 boolean contactnameExists = false;
                 VBox messageContainer = new VBox();
