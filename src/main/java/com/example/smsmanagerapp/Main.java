@@ -15,15 +15,15 @@ public class Main extends Application {
 
     @Override
     public void start(Stage stage) throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(Main.class.getResource("new-sms-view.fxml"));
-        Scene scene = new Scene(fxmlLoader.load());
-        stage.setTitle("SMSManager");
-        stage.setScene(scene);
-        stage.show();
+//        FXMLLoader fxmlLoader = new FXMLLoader(Main.class.getResource("new-sms-view.fxml"));
+//        Scene scene = new Scene(fxmlLoader.load());
+//        stage.setTitle("SMSManager");
+//        stage.setScene(scene);
+//        stage.show();
         MenuManager.getMenuController().setStage(stage);
-        GUIControllerUpdateable guiController = fxmlLoader.getController();
+       // GUIControllerUpdateable guiController = fxmlLoader.getController();
         Platform.runLater(() -> {
-            ApplicationSetup setup = new ApplicationSetup(scene, guiController);
+            ApplicationSetup setup = new ApplicationSetup(stage);
             setup.setUp();
         });
     }

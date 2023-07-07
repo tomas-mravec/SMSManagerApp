@@ -3,9 +3,16 @@ package com.example.smsmanagerapp.setup;
 import com.example.smsmanagerapp.connection.ConnectionEstablisher;
 import com.example.smsmanagerapp.connection.database.DatabaseConnection;
 import com.example.smsmanagerapp.connection.database.MySQLDatabaseConnection;
-import com.example.smsmanagerapp.gui.controller.container.SceneControllerContainerImpl;
+import com.example.smsmanagerapp.gui.controller.CreateContactController;
+import com.example.smsmanagerapp.gui.controller.HistorySMSMessagesController;
+import com.example.smsmanagerapp.gui.controller.NewSMSMessagesController;
+import com.example.smsmanagerapp.gui.controller.SendNewMessageController;
+import com.example.smsmanagerapp.gui.controller.container.SMSSceneControllerContainer;
+import com.example.smsmanagerapp.gui.controller.container.SMSSceneControllerContainerImpl;
+import com.example.smsmanagerapp.gui.controller.interfaces.GUIController;
 import com.example.smsmanagerapp.table.manager.contact.ContactManager;
 import com.example.smsmanagerapp.table.manager.contact.ContactManagerImpl;
+import com.example.smsmanagerapp.table.manager.group.contact.GroupContactManager;
 import com.example.smsmanagerapp.table.manager.group.contact.GroupContactManagerImpl;
 import com.example.smsmanagerapp.table.manager.message.SMSMessageManager;
 import com.example.smsmanagerapp.factory.connection.ConnectionEstablisherFactory;
@@ -16,20 +23,33 @@ import com.example.smsmanagerapp.listener.MessageListener;
 import com.example.smsmanagerapp.manager.MenuManager;
 import com.example.smsmanagerapp.sender.MessageSender;
 import com.example.smsmanagerapp.sender.MessageSenderYeastar;
+import com.example.smsmanagerapp.table.manager.message.interfaces.MessageManager;
 import com.example.smsmanagerapp.table.manager.messageout.MessageOutImpl;
+import com.example.smsmanagerapp.table.manager.messageout.MessageOutManager;
 import com.example.smsmanagerapp.utility.DatabaseLoginData;
+import com.example.smsmanagerapp.utility.ResourceHelper;
+import javafx.application.Platform;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.stage.Stage;
 
+import java.io.IOException;
 import java.sql.Connection;
+import java.util.List;
 
 public class ApplicationSetup {
 
     private Scene scene;
     private GUIControllerUpdateable guiController;
+    private Stage stage;
+    private SMSSceneControllerContainer sceneControllerContainer;
 
-    public ApplicationSetup(Scene scene, GUIControllerUpdateable guiController) {
+    public ApplicationSetup(Stage stage) {
         this.scene = scene;
         this.guiController = guiController;
+        this.stage = stage;
+        this.sceneControllerContainer = new SMSSceneControllerContainerImpl();
     }
 
     public void setUp() {
@@ -92,7 +112,6 @@ public class ApplicationSetup {
 
         if (connectionEstablisher.getSocket().isPresent()) {
 
-
             DatabaseConnection databaseConnection = new MySQLDatabaseConnection(
                     DatabaseLoginData.getUrl(),
                     DatabaseLoginData.getUsername(),
@@ -102,7 +121,8 @@ public class ApplicationSetup {
             ContactManager contactManager = new ContactManagerImpl(connection);
             SMSMessageManager messageManager = new SMSMessageManager(connection, contactManager);
             MessageSender messageSender = new MessageSenderYeastar(connectionEstablisher.getOutputStream());
-
+            MessageOutImpl messageOutManager = new MessageOutImpl(connection);
+            GroupContactManagerImpl groupContactManager = new GroupContactManagerImpl(connection);
 
             MessageListener messageListener = MessageListenerFactory.create(TYPE,
                     connectionEstablisher.getSocket().get(),
@@ -110,25 +130,24 @@ public class ApplicationSetup {
                     connectionEstablisher.getInputStream());
             messageListener.addObserver(messageManager);
 
-            MenuManager.getMenuController().addMessageManager(messageManager);
-            MenuManager.getMenuController().setContactManager(contactManager);
-            MenuManager.getMenuController().setMessageSender(messageSender);
-            MenuManager.getMenuController().setConnection(connection);
-            MenuManager.getMenuController().setMessageOutManager(new MessageOutImpl(connection));
-            MenuManager.getMenuController().setGroupContactManager(new GroupContactManagerImpl(connection));
-
-            SceneControllerContainerImpl sceneControllerContainer = new SceneControllerContainerImpl();
-            setScenes(sceneControllerContainer);
             MenuManager.getMenuController().setSceneControllerContainer(sceneControllerContainer);
 
-            //pri refactoringu vytvorit triedu od ktorej si bude menu pytat managerov
+            try {
+                createScenesControllers(messageManager, contactManager, messageOutManager, messageSender, groupContactManager); //using new scene setup
+            } catch (IOException e) {
+                System.out.println("KEK WHAT A KWAB");
+                throw new RuntimeException(e);
+            }
 
-            guiController.addMessageManager(messageManager);
             GUINotifier notifier = GUINotifier.getInstance();
-            notifier.setCurrentScene(scene);
-            notifier.setGuiController(guiController);
-            guiController.testReturn();
-            guiController.loadMessages();
+            notifier.setCurrentScene(sceneControllerContainer.getNewSMSMessageScene());
+            NewSMSMessagesController newSMSMessagesController = sceneControllerContainer.getNewSMSMessagesController();
+            newSMSMessagesController.setMenu();
+            notifier.setGuiController(newSMSMessagesController);
+            stage.setScene(sceneControllerContainer.getNewSMSMessageScene());
+            stage.show();
+         //   newSMSMessagesController.testReturn();
+           // newSMSMessagesController.loadMessages();
             messageListener.listenForMessages();
 
 //            MessageListener messageListener = MessageListenerFactory.create(TYPE, connection.getSocket().get());
@@ -149,8 +168,53 @@ public class ApplicationSetup {
         }
     }
 
-    private void setScenes(SceneControllerContainerImpl sceneControllerContainer) {
-        //newMessagesScene = fxmlLoad..............
-        // sceneControllerCOntainer.setNewMessagesScene(newMessagesScene)
+    private void createScenesControllers(MessageManager messageManager, ContactManager contactManager,
+                                                  MessageOutManager messageOutManager,
+                                                  MessageSender messageSender,
+                                                  GroupContactManager groupContactManager) throws IOException {
+
+
+        NewSceneSetup newSMSSceneSetup = new NewSceneSetup(stage, ResourceHelper.getNewSMSSceneResource(), List.of(messageManager));
+        NewSMSMessagesController newSMSMessagesController = null;
+        newSMSMessagesController = (NewSMSMessagesController) newSMSSceneSetup.loadController();
+        sceneControllerContainer.setNewSMSMessagesController(newSMSMessagesController);
+        sceneControllerContainer.setNewSMSMessagesScene(new Scene(newSMSMessagesController.getRoot()));
+        newSMSMessagesController.testReturn();
+        newSMSMessagesController.loadMessages();
+
+
+         NewSceneSetup historySceneSetup = new NewSceneSetup(stage, ResourceHelper.getHistorySMSSceneResource(), List.of(messageManager));
+         HistorySMSMessagesController historySMSMessagesController = null;
+         historySMSMessagesController = (HistorySMSMessagesController) historySceneSetup.loadController();
+         sceneControllerContainer.setHistorySMSMessagesController(historySMSMessagesController);
+         Parent rootPaneParent = historySMSMessagesController.getRoot();
+         sceneControllerContainer.setHistorySMSMessagesScene(new Scene(rootPaneParent));
+         historySMSMessagesController.loadMessages();
+
+
+
+        NewSceneSetup createContactSceneSetup = new NewSceneSetup(stage, ResourceHelper.getCreateContactSceneResource(), null);
+        CreateContactController createContactController = (CreateContactController) createContactSceneSetup.loadController();
+        createContactController.setContactManager(contactManager);
+        sceneControllerContainer.setCreateContactController(createContactController);
+        sceneControllerContainer.setCreateContactScene(new Scene(createContactController.getRoot()));
+        createContactController.loadMessages();
+
+        NewSceneSetup sendNewMessageSceneSetup = new NewSceneSetup(stage, ResourceHelper.getSendNewMessageSceneResource(), null);
+        SendNewMessageController sendNewMessageController = (SendNewMessageController) sendNewMessageSceneSetup.loadController();
+        sendNewMessageController.setMessageOutManager(messageOutManager);
+        sendNewMessageController.setMessageSender(messageSender);
+        sendNewMessageController.setContactManager(contactManager);
+        sendNewMessageController.setGroupContactManager(groupContactManager);
+        sceneControllerContainer.setSendNewMessageController(sendNewMessageController);
+        sceneControllerContainer.setSendNewMessageScene(new Scene(sendNewMessageController.getRoot()));
+        sendNewMessageController.loadMessages();
+
+   // });
     }
+
+//    private void setScenes(SceneControllerContainerImpl sceneControllerContainer) {
+//        //newMessagesScene = fxmlLoad..............
+//        // sceneControllerCOntainer.setNewMessagesScene(newMessagesScene)
+//    }
 }

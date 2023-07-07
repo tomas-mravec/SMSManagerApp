@@ -15,4 +15,8 @@ public class ResourceHelper {
     public static String getMessageLabelsStyle() {
         return "/com/example/smsmanagerapp/message-style.css";
     }
+
+    public static String getCreateContactSceneResource() {return "/com/example/smsmanagerapp/create-contact-view.fxml";}
+
+    public static String getSendNewMessageSceneResource() { return "/com/example/smsmanagerapp/send-message-view.fxml";}
 }

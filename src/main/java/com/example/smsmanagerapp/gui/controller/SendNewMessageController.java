@@ -3,16 +3,21 @@ package com.example.smsmanagerapp.gui.controller;
 import com.example.smsmanagerapp.data.Data;
 import com.example.smsmanagerapp.data.SMSMessage;
 import com.example.smsmanagerapp.data.contact.SMSMessageOut;
+import com.example.smsmanagerapp.gui.controller.interfaces.GUIController;
 import com.example.smsmanagerapp.table.manager.contact.ContactManager;
 import com.example.smsmanagerapp.data.contact.Contact;
 import com.example.smsmanagerapp.manager.MenuManager;
 import com.example.smsmanagerapp.sender.MessageSender;
 import com.example.smsmanagerapp.table.manager.group.contact.GroupContactManager;
+import com.example.smsmanagerapp.table.manager.message.interfaces.MessageManager;
 import com.example.smsmanagerapp.table.manager.messageout.MessageOutManager;
+import com.example.smsmanagerapp.table.manager.type.MessageRecencyType;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
+import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
@@ -28,7 +33,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-public class SendNewMessageController implements Initializable {
+public class SendNewMessageController implements GUIController {
 
     @FXML
     private Button sendMessageButton;
@@ -44,7 +49,7 @@ public class SendNewMessageController implements Initializable {
 
     private MessageSender messageSender;
 
-    private VBox menu;
+    private Node menu;
 
     private ContactManager contactManager;
     private GroupContactManager groupContactManager;
@@ -68,10 +73,13 @@ public class SendNewMessageController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        menu = MenuManager.getMenuInstance();
-        rootPane.getChildren().add(0, menu);
+        //menu = MenuManager.getMenuInstance();
+        //rootPane.getChildren().add(0, menu);
     }
 
+    public void setMenu() {
+        rootPane.getChildren().add(0, MenuManager.getMenuInstance());
+    }
     public void sendMessage() {
 //        String messageContent = textArea.getText();
 //        if (scheduledMessageTime == null) {
@@ -176,10 +184,26 @@ public class SendNewMessageController implements Initializable {
     public void clearMessages() {
         messageBox.getChildren().clear();
     }
+
+    @Override
+    public void addMessageManager(MessageManager messageManager) {
+
+    }
+
     public void loadMessages() {
         for (Data data : messageOutManager.getAllMessages()) {
             updateGUI(data);
         }
+    }
+
+    @Override
+    public void testReturn() {
+
+    }
+
+    @Override
+    public MessageRecencyType getRecencyType() {
+        return null;
     }
 
     private void updateGUI(Data data) {
@@ -210,6 +234,11 @@ public class SendNewMessageController implements Initializable {
             });
         }
     }
+
+    public Parent getRoot() {
+        return rootPane;
+    }
+
 
     public void setMessageSender(MessageSender messageSender) {
         this.messageSender = messageSender;

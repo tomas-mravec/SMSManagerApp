@@ -12,6 +12,8 @@ import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
+import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
@@ -26,12 +28,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
-public class NewSMSMessagesController implements GUIControllerUpdateable, Initializable {
+public class NewSMSMessagesController implements GUIControllerUpdateable{
 
     @FXML
     private VBox messageBox;
 
-    private VBox menu;
+    private Node menu;
     private MenuControllerImpl menuController;
     @FXML
     private AnchorPane rootPane;
@@ -49,14 +51,17 @@ public class NewSMSMessagesController implements GUIControllerUpdateable, Initia
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        menu = MenuManager.getMenuInstance();
-        menuController = MenuManager.getMenuController();
-        rootPane.getChildren().add(0, menu);
+        //menu = MenuManager.getMenuInstance();
+        //menuController = MenuManager.getMenuController();
+        //rootPane.getChildren().add(0, menu);
         scrollPane.setStyle("-fx-background-color: transparent; -fx-background-insets: 0; -fx-background-color: white;");
         messageBox.setStyle("-fx-border-color: transparent; -fx-border-width: 0; -fx-background-color: white;");
         messageBox.getStylesheets().add(getClass().getResource(ResourceHelper.getMessageLabelsStyle()).toExternalForm());
     }
 
+    public void setMenu() {
+        rootPane.getChildren().add(0, MenuManager.getMenuInstance());
+    }
 
     public void loadMessages() {
         System.out.println("Loadujem data z gui controllera");
@@ -183,8 +188,12 @@ public class NewSMSMessagesController implements GUIControllerUpdateable, Initia
         }
     }
 
+    public Parent getRoot() {
+        return rootPane;
+    }
+
     public void testReturn() {
-        System.out.println("GUIController sa ozyva " + messageManagers.get(0).toString());
+        //System.out.println("GUIController sa ozyva " + messageManagers.get(0).toString());
     }
 
     public MessageRecencyType getRecencyType() {

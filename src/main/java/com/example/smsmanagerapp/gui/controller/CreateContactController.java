@@ -1,12 +1,17 @@
 package com.example.smsmanagerapp.gui.controller;
 
+import com.example.smsmanagerapp.gui.controller.interfaces.GUIController;
 import com.example.smsmanagerapp.table.manager.contact.ContactManager;
 import com.example.smsmanagerapp.data.contact.Contact;
 import com.example.smsmanagerapp.manager.MenuManager;
+import com.example.smsmanagerapp.table.manager.message.interfaces.MessageManager;
+import com.example.smsmanagerapp.table.manager.type.MessageRecencyType;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
@@ -15,7 +20,7 @@ import javafx.scene.layout.VBox;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-public class CreateContactController implements Initializable {
+public class CreateContactController implements GUIController {
 
     @FXML
     private Button createContactButton;
@@ -28,7 +33,7 @@ public class CreateContactController implements Initializable {
 
     @FXML
     private TextField numberField;
-    private VBox menu;
+    private Node menu;
     @FXML
     private AnchorPane rootPane;
 
@@ -41,8 +46,8 @@ public class CreateContactController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        menu = MenuManager.getMenuInstance();
-        rootPane.getChildren().add(0, menu);
+        //menu = MenuManager.getMenuInstance();
+       // rootPane.getChildren().add(0, menu);
         conditionNotMetLabel.setVisible(false);
         scrollPane.setStyle("-fx-background-color: transparent; -fx-background-insets: 0; -fx-background-color: white;");
         contactBox.setStyle("-fx-border-color: transparent; -fx-border-width: 0; -fx-background-color: white;");
@@ -92,5 +97,33 @@ public class CreateContactController implements Initializable {
     public void setContactManager(ContactManager contactManager) {
         this.contactManager = contactManager;
         loadContactsWithName();
+    }
+
+    public void setMenu() {
+        rootPane.getChildren().add(0,MenuManager.getMenuInstance());
+    }
+
+    public Parent getRoot() {
+        return rootPane;
+    }
+
+    @Override
+    public void addMessageManager(MessageManager messageManager) {
+
+    }
+
+    @Override
+    public void loadMessages() {
+
+    }
+
+    @Override
+    public void testReturn() {
+
+    }
+
+    @Override
+    public MessageRecencyType getRecencyType() {
+        return null;
     }
 }

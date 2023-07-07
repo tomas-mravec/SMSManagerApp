@@ -1,6 +1,6 @@
 package com.example.smsmanagerapp.gui.controller;
 
-import com.example.smsmanagerapp.gui.controller.container.SceneControllerContainer;
+import com.example.smsmanagerapp.gui.controller.container.SMSSceneControllerContainer;
 import com.example.smsmanagerapp.gui.controller.interfaces.GUIControllerUpdateable;
 import com.example.smsmanagerapp.table.manager.contact.ContactManager;
 import com.example.smsmanagerapp.table.manager.contact.ContactManagerImpl;
@@ -47,7 +47,7 @@ public class MenuControllerImpl {
     private MessageOutManager messageOutManager;
 
     private Connection connection;
-    private SceneControllerContainer sceneControllerContainer;
+    private SMSSceneControllerContainer sceneControllerContainer;
 
     public MenuControllerImpl() {
         messageManagers = new ArrayList<>();
@@ -63,7 +63,7 @@ public class MenuControllerImpl {
         buttonStyleManager.addButton(switchToHistoryButton);
         buttonStyleManager.addButton(switchToContactsButton);
         this.highlightedButton = "NewSMS";
-        switchToNewMessagesButton.setStyle(buttonStyleManager.getOriginalStyle(switchToNewMessagesButton) + "-fx-background-color: #81A5B0;");
+       // switchToNewMessagesButton.setStyle(buttonStyleManager.getOriginalStyle(switchToNewMessagesButton) + "-fx-background-color: #81A5B0;");
     }
 
     /// skus dat random generator a nech menubox vypise to random cislo ci to je stale ta ista instancia a nie ina
@@ -72,36 +72,35 @@ public class MenuControllerImpl {
         System.out.println("Stlacil som tlacidlo, length array je: " + this.messageManagers.size());
         System.out.println("Stlacil som tlacidlo, int list ma length: " + intList.size());
 
-        NewSceneSetup newSceneSetup = new NewSceneSetup(stage, ResourceHelper.getNewSMSSceneResource(), messageManagers);
-        newSceneSetup.switchToNewScene();
-        highlightedButton = "NewSMS";
-        changeButtonsColor(highlightedButton);
+        Scene scene = sceneControllerContainer.getNewSMSMessageScene();
+        if (stage.getScene() != scene) {
+            GUINotifier guiNotifier = GUINotifier.getInstance();
+            guiNotifier.setCurrentScene(scene);
+            NewSMSMessagesController newSMSMessagesController = sceneControllerContainer.getNewSMSMessagesController();
+            guiNotifier.setGuiController(newSMSMessagesController);
+            newSMSMessagesController.setMenu();
+            stage.setScene(scene);
+
+            highlightedButton = "NewSMS";
+            changeButtonsColor(highlightedButton);
+        }
     }
 
     private void changeButtonsColor(String button) {
-        switchToHistoryButton.setStyle(buttonStyleManager.getOriginalStyle(switchToHistoryButton) + "-fx-background-color: #ADD8E6;");
-        switchToNewMessagesButton.setStyle(buttonStyleManager.getOriginalStyle(switchToNewMessagesButton) + "-fx-background-color: #ADD8E6;");
-        switchToContactsButton.setStyle(buttonStyleManager.getOriginalStyle(switchToContactsButton) + "-fx-background-color: #ADD8E6;");
-        System.out.println("Length switchToContactsButton stylu je: " + switchToNewMessagesButton.getStyle().length());
-        if (button.equals("NewSMS")) {
-            switchToNewMessagesButton.setStyle(buttonStyleManager.getOriginalStyle(switchToNewMessagesButton) + "-fx-background-color: #81A5B0;");
-        }
-        if (button.equals("History")) {
-            switchToHistoryButton.setStyle(buttonStyleManager.getOriginalStyle(switchToHistoryButton) + "-fx-background-color: #81A5B0;");
-        }
-        if (button.equals("Contacts")) {
-            switchToContactsButton.setStyle(buttonStyleManager.getOriginalStyle(switchToContactsButton) + "-fx-background-color: #81A5B0;");
-        }
+//        switchToHistoryButton.setStyle(buttonStyleManager.getOriginalStyle(switchToHistoryButton) + "-fx-background-color: #ADD8E6;");
+//        switchToNewMessagesButton.setStyle(buttonStyleManager.getOriginalStyle(switchToNewMessagesButton) + "-fx-background-color: #ADD8E6;");
+//        switchToContactsButton.setStyle(buttonStyleManager.getOriginalStyle(switchToContactsButton) + "-fx-background-color: #ADD8E6;");
+//        System.out.println("Length switchToContactsButton stylu je: " + switchToNewMessagesButton.getStyle().length());
+//        if (button.equals("NewSMS")) {
+//            switchToNewMessagesButton.setStyle(buttonStyleManager.getOriginalStyle(switchToNewMessagesButton) + "-fx-background-color: #81A5B0;");
+//        }
+//        if (button.equals("History")) {
+//            switchToHistoryButton.setStyle(buttonStyleManager.getOriginalStyle(switchToHistoryButton) + "-fx-background-color: #81A5B0;");
+//        }
+//        if (button.equals("Contacts")) {
+//            switchToContactsButton.setStyle(buttonStyleManager.getOriginalStyle(switchToContactsButton) + "-fx-background-color: #81A5B0;");
+//        }
     }
-
-    private void addMessageManagersToController(GUIControllerUpdateable guiController) {
-        System.out.println("Dam vobec nejaky kontainer do controllera?: " + "Dlzka menu: " + this.toString() + " array kontainerov je " + messageManagers.size());
-        for (MessageManager messageManager : messageManagers) {
-                guiController.addMessageManager(messageManager);
-                System.out.println("YEP");
-        }
-    }
-
 
     //vytvor kontainery pre messages kde sa budu uloziavat messages, tieto kontajneri budu observers listenera a nie gui updater, ked pride nova sprava, staci aby bol GUI updater len jeden
     // lebo aktualna scena je len jedna a mozes sa spytat ze ci je instance of napr UpdateableSMSMessage a ak hej tak mu data posli ak nie tak mu neopsielaj
@@ -111,102 +110,114 @@ public class MenuControllerImpl {
         System.out.println("Stlacil som tlacidlo, length array je: " + this.messageManagers.size());
         System.out.println("Stlacil som tlacidlo, int list ma length: " + intList.size());
 
-        NewSceneSetup newSceneSetup = new NewSceneSetup(stage, ResourceHelper.getHistorySMSSceneResource(), messageManagers);
-        newSceneSetup.switchToNewScene();
-        highlightedButton = "History";
-        changeButtonsColor(highlightedButton);
+        Scene scene = sceneControllerContainer.getHistorySMSMessagesScene();
+        if (stage.getScene() != scene) {
+            GUINotifier guiNotifier = GUINotifier.getInstance();
+            guiNotifier.setCurrentScene(null);
+            sceneControllerContainer.getHistorySMSMessagesController().setMenu();
+            stage.setScene(scene);
+
+//        NewSceneSetup newSceneSetup = new NewSceneSetup(stage, ResourceHelper.getHistorySMSSceneResource(), messageManagers);
+//        newSceneSetup.switchToNewScene();
+            highlightedButton = "History";
+            changeButtonsColor(highlightedButton);
+        }
     }
 
     public void switchToCreateNewContact(ActionEvent event) throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/com/example/smsmanagerapp/create-contact-view.fxml"));
-        root = fxmlLoader.load();
-        CreateContactController controller = fxmlLoader.getController();
-        controller.setContactManager(contactManager);
-        scene = new Scene(root);
-        GUINotifier notifier = GUINotifier.getInstance();
-        notifier.setCurrentScene(scene);
-        notifier.setGuiController(null);
-        stage.setScene(scene);
-        stage.show();
-        highlightedButton = "Contacts";
-        changeButtonsColor(highlightedButton);
+//        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/com/example/smsmanagerapp/create-contact-view.fxml"));
+//        root = fxmlLoader.load();
+//        CreateContactController controller = fxmlLoader.getController();
+//        controller.setContactManager(contactManager);
+//        scene = new Scene(root);
+//        GUINotifier notifier = GUINotifier.getInstance();
+//        notifier.setCurrentScene(scene);
+//        notifier.setGuiController(null);
+//        stage.setScene(scene);
+//        stage.show();
+
+        Scene scene = sceneControllerContainer.getCreateContactScene();
+        if (stage.getScene() != scene) {
+            CreateContactController createContactController = sceneControllerContainer.getCreateContactController();
+            createContactController.setMenu();
+            GUINotifier guiNotifier = GUINotifier.getInstance();
+            guiNotifier.setCurrentScene(null);
+            stage.setScene(scene);
+
+            highlightedButton = "Contacts";
+            changeButtonsColor(highlightedButton);
+        }
     }
 
     public void switchToSendMessageScene() throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/com/example/smsmanagerapp/send-message-view.fxml"));
-        root = fxmlLoader.load();
-        SendNewMessageController newMessageController = fxmlLoader.getController();
-        newMessageController.setMessageSender(messageSender);
-        newMessageController.setContactManager(new ContactManagerImpl(connection));
-        newMessageController.setGroupContactManager(groupContactManager);
-        newMessageController.setMessageOutManager(messageOutManager);
-        newMessageController.loadMessages();
+//        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/com/example/smsmanagerapp/send-message-view.fxml"));
+//        root = fxmlLoader.load();
+//        SendNewMessageController newMessageController = fxmlLoader.getController();
+//        newMessageController.setMessageSender(messageSender);
+//        newMessageController.setContactManager(new ContactManagerImpl(connection));
+//        newMessageController.setGroupContactManager(groupContactManager);
+//        newMessageController.setMessageOutManager(messageOutManager);
+//        newMessageController.loadMessages();
+//
+//        scene = new Scene(root);
+//        GUINotifier notifier = GUINotifier.getInstance();
+//        notifier.setCurrentScene(scene);
+//        notifier.setGuiController(null);
+//        stage.setScene(scene);
+//        stage.show();
 
-        scene = new Scene(root);
-        GUINotifier notifier = GUINotifier.getInstance();
-        notifier.setCurrentScene(scene);
-        notifier.setGuiController(null);
-        stage.setScene(scene);
-        stage.show();
+
+        Scene scene = sceneControllerContainer.getSendNewMessageScene();
+        if (stage.getScene() != scene) {
+            sceneControllerContainer.getSendNewMessageController().setMenu();
+            GUINotifier guiNotifier = GUINotifier.getInstance();
+            guiNotifier.setCurrentScene(null);
+            stage.setScene(scene);
+
 //        highlightedButton = "Contacts";
 //        changeButtonsColor(highlightedButton);
-    }
-
-    public void addMessageManager(MessageManager messageManager) {
-        this.messageManagers.add(messageManager);
-        System.out.println("Menu: " + this.toString() +" message container received" + " length of container array is: " + messageManagers.size());
-        System.out.println("Intlist ma dlzku: " + intList.size());
+        }
     }
 
     public void newMessagesButtonMouseEntered() {
-        switchToNewMessagesButton.setStyle(buttonStyleManager.getOriginalStyle(switchToContactsButton) + "-fx-background-color: #81A5B0;");
+        //switchToNewMessagesButton.setStyle(buttonStyleManager.getOriginalStyle(switchToContactsButton) + "-fx-background-color: #81A5B0;");
         //switchToNewMessagesButton.setText("KWAB");
     }
 
     public void newMessagesButtonMouseExited() {
-        if (!highlightedButton.equals("NewSMS"))
-        switchToNewMessagesButton.setStyle(buttonStyleManager.getOriginalStyle(switchToNewMessagesButton) + "-fx-background-color: #ADD8E6;");
+       // if (!highlightedButton.equals("NewSMS"))
+        //switchToNewMessagesButton.setStyle(buttonStyleManager.getOriginalStyle(switchToNewMessagesButton) + "-fx-background-color: #ADD8E6;");
         //switchToNewMessagesButton.setText("Nové Správy");
     }
 
     public void historyButtonMouseEntered() {
-        switchToHistoryButton.setStyle(buttonStyleManager.getOriginalStyle(switchToHistoryButton) + "-fx-background-color: #81A5B0;");
+       // switchToHistoryButton.setStyle(buttonStyleManager.getOriginalStyle(switchToHistoryButton) + "-fx-background-color: #81A5B0;");
     }
     public void historyButtonMouseExited() {
-        if (!highlightedButton.equals("History"))
-        switchToHistoryButton.setStyle(buttonStyleManager.getOriginalStyle(switchToHistoryButton) + "-fx-background-color: #ADD8E6;");
+       // if (!highlightedButton.equals("History"))
+        //switchToHistoryButton.setStyle(buttonStyleManager.getOriginalStyle(switchToHistoryButton) + "-fx-background-color: #ADD8E6;");
     }
 
    public void contactsButtonMouseEntered() {
-       switchToContactsButton.setStyle(buttonStyleManager.getOriginalStyle(switchToContactsButton) + "-fx-background-color: #81A5B0;");
+       System.out.println("Kontakty entered");
+      // switchToContactsButton.setStyle(buttonStyleManager.getOriginalStyle(switchToContactsButton) + "-fx-background-color: #81A5B0;");
    }
    public void contactsButtonMouseExited() {
-        if (!highlightedButton.equals("Contacts"))
-            switchToContactsButton.setStyle(buttonStyleManager.getOriginalStyle(switchToContactsButton) + "-fx-background-color: #ADD8E6;");
+        //if (!highlightedButton.equals("Contacts"))
+            //switchToContactsButton.setStyle(buttonStyleManager.getOriginalStyle(switchToContactsButton) + "-fx-background-color: #ADD8E6;");
    }
 
 
-    public SceneControllerContainer getSceneControllerContainer() {
+    public SMSSceneControllerContainer getSceneControllerContainer() {
         return sceneControllerContainer;
     }
 
-    public void setSceneControllerContainer(SceneControllerContainer sceneControllerContainer) {
+    public void setSceneControllerContainer(SMSSceneControllerContainer sceneControllerContainer) {
         this.sceneControllerContainer = sceneControllerContainer;
     }
 
     public void setStage(Stage stage) {
         this.stage = stage;
     }
-
-    public void setContactManager(ContactManager contactManager) {
-        this.contactManager = contactManager;
-    }
-
-    public void setMessageSender(MessageSender messageSender) {
-        this.messageSender = messageSender;
-    }
-    public void setGroupContactManager(GroupContactManager groupContactManager){this.groupContactManager = groupContactManager;}
-    public void setMessageOutManager(MessageOutManager messageOutManager){this.messageOutManager = messageOutManager;}
-    public void setConnection(Connection connection){this.connection = connection;}
 
 }

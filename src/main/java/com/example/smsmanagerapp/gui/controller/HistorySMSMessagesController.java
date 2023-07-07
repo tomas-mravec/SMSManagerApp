@@ -13,6 +13,8 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
+import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
@@ -25,9 +27,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
-public class HistorySMSMessagesController implements Initializable, GUIControllerUpdateable {
+public class HistorySMSMessagesController implements GUIControllerUpdateable {
 
-    private VBox menu;
+    private Node menu;
 
     @FXML
     private VBox messageBox;
@@ -63,9 +65,11 @@ public class HistorySMSMessagesController implements Initializable, GUIControlle
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        menu = MenuManager.getMenuInstance();
-        menuController = MenuManager.getMenuController();
-        rootPane.getChildren().add(0, menu); // Add menuBox as the first child
+        //menu = MenuManager.getMenuInstance();
+       // menuController = MenuManager.getMenuController();
+        System.out.println("Som v history controlleru pred pridadim menu do root pane");
+        //rootPane.getChildren().add(0, menu); // Add menuBox as the first child
+        System.out.println("Som v history controlleru za pridadim menu do root pane");
         searchField.textProperty().addListener((observable, oldValue, newValue) -> {
             System.out.println("In button listener new search word is " + newValue);
             searchHistoryBySender(newValue);
@@ -75,6 +79,10 @@ public class HistorySMSMessagesController implements Initializable, GUIControlle
         scrollPane.setStyle("-fx-background-color: transparent; -fx-background-insets: 0; -fx-background-color: white;");
         messageBox.setStyle("-fx-border-color: transparent; -fx-border-width: 0; -fx-background-color: white;");
         messageBox.getStylesheets().add(getClass().getResource(ResourceHelper.getMessageLabelsStyle()).toExternalForm());
+    }
+
+    public void setMenu() {
+        rootPane.getChildren().add(0, MenuManager.getMenuInstance());
     }
 
     @Override
@@ -224,8 +232,12 @@ public class HistorySMSMessagesController implements Initializable, GUIControlle
     public void testReturn() {
 
     }
-
+    public Parent getRoot() {
+        return rootPane;
+    }
     public MessageRecencyType getRecencyType() {
         return recencyType;
     }
+
+
 }
