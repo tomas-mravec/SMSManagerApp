@@ -19,4 +19,11 @@ public class ResourceHelper {
     public static String getCreateContactSceneResource() {return "/com/example/smsmanagerapp/create-contact-view.fxml";}
 
     public static String getSendNewMessageSceneResource() { return "/com/example/smsmanagerapp/send-message-view.fxml";}
+
+    public static String getMessageBlockResource() { return "/com/example/smsmanagerapp/message-block.fxml";}
+
+    public static String getContactBlockResource() { return "/com/example/smsmanagerapp/contact-block.fxml";}
+    public static String getReceiverBlockResource() { return "/com/example/smsmanagerapp/receiver-block.fxml";}
+
+    public static String getMessageOutBlock() {return "/com/example/smsmanagerapp/message-out-block.fxml";}
 }

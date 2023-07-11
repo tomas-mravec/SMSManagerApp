@@ -1,9 +1,11 @@
-package com.example.smsmanagerapp.gui.controller;
+package com.example.smsmanagerapp.gui.controller.send;
 
 import com.example.smsmanagerapp.data.Data;
 import com.example.smsmanagerapp.data.SMSMessage;
 import com.example.smsmanagerapp.data.contact.SMSMessageOut;
+import com.example.smsmanagerapp.gui.controller.contact.ContactBlockController;
 import com.example.smsmanagerapp.gui.controller.interfaces.GUIController;
+import com.example.smsmanagerapp.gui.controller.message.MessageBlockController;
 import com.example.smsmanagerapp.table.manager.contact.ContactManager;
 import com.example.smsmanagerapp.data.contact.Contact;
 import com.example.smsmanagerapp.manager.MenuManager;
@@ -12,8 +14,10 @@ import com.example.smsmanagerapp.table.manager.group.contact.GroupContactManager
 import com.example.smsmanagerapp.table.manager.message.interfaces.MessageManager;
 import com.example.smsmanagerapp.table.manager.messageout.MessageOutManager;
 import com.example.smsmanagerapp.table.manager.type.MessageRecencyType;
+import com.example.smsmanagerapp.utility.ResourceHelper;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
@@ -23,6 +27,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
+import java.io.IOException;
 import java.net.URL;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -42,10 +47,8 @@ public class SendNewMessageController implements GUIController {
     private TextArea textArea;
 
     @FXML
-    private TextField numberField;
-
-    @FXML
     private AnchorPane rootPane;
+
 
     private MessageSender messageSender;
 
@@ -64,6 +67,14 @@ public class SendNewMessageController implements GUIController {
     private List<String> contacts;
     private final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
 
+    @FXML
+    private TextField receiverField;
+
+    @FXML
+    private Button addReceiverButton;
+
+    @FXML
+    private VBox receiverBox;
 
     public SendNewMessageController() {
         contacts = new ArrayList<>();
@@ -77,34 +88,41 @@ public class SendNewMessageController implements GUIController {
         //rootPane.getChildren().add(0, menu);
     }
 
+    public void addReceiver() {
+        Platform.runLater(() -> {
+
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(ResourceHelper.getReceiverBlockResource()));
+            ReceiverBlockController receiverBlockController;
+            try {
+                fxmlLoader.load();
+                receiverBlockController = fxmlLoader.getController();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            String receiver = receiverField.getText();
+            receiverBlockController.setReceiverLabelText(receiver);
+            contacts.add(receiver);
+            receiverBox.getChildren().add(receiverBlockController.getRootPane());
+            receiverField.clear();
+
+            Button removeButton = receiverBlockController.getRemoveButton();
+            removeButton.setOnAction(event -> {
+                receiverBox.getChildren().remove(receiverBlockController.getRootPane());
+                contacts.remove(receiver);
+            });
+
+        });
+    }
+
+    public void removeAllReceivers() {
+        contacts.clear();
+        receiverBox.getChildren().clear();
+    }
+
     public void setMenu() {
         rootPane.getChildren().add(0, MenuManager.getMenuInstance());
     }
     public void sendMessage() {
-//        String messageContent = textArea.getText();
-//        if (scheduledMessageTime == null) {
-//            send(new ArrayList<>(contacts), messageContent);
-//        }
-//        else {
-//                List<String> addedContacts = new ArrayList<>(contacts);
-//                TimerTask timerTask = new TimerTask() {
-//                    @Override
-//                    public void run() {
-//                        Platform.runLater(() -> {
-//                        send(new ArrayList<>(addedContacts), messageContent);
-//                        System.out.println("Bol som poslany scheduled dole by mal byt zoznam kontaktov");
-//                        for (String contact : contacts) {
-//                            System.out.println(contact);
-//                        }
-//                        });
-//                    }
-//                };
-//                ZoneId zoneId = ZoneId.systemDefault();
-//                long millis = scheduledMessageTime.atZone(zoneId).toInstant().toEpochMilli();
-//                Date executionDate = new Date(millis);
-//                timer.schedule(timerTask, executionDate);
-//        }
-//        contacts.clear();
 
         String messageContent = textArea.getText();
 
@@ -175,12 +193,6 @@ public class SendNewMessageController implements GUIController {
 
     }
 
-    public void addContact() {
-        String receiver = numberField.getText();
-        System.out.println("Pridal som kontakt: " + receiver);
-        contacts.add(receiver);
-    }
-
     public void clearMessages() {
         messageBox.getChildren().clear();
     }
@@ -210,27 +222,56 @@ public class SendNewMessageController implements GUIController {
         if (data != null) {
             Platform.runLater(() -> {
                 SMSMessageOut messageOut = (SMSMessageOut) data;
+
+                FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(ResourceHelper.getMessageOutBlock()));
+                MessageOutBlockController messageOutBlockController;
+                try {
+                    fxmlLoader.load();
+                    messageOutBlockController = fxmlLoader.getController();
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+
+                String receivers = "";
+                for (Contact contact :messageOut.getGroupContact().getContacts()) {
+                    if (contact.getName() != null && !contact.getName().isEmpty()) {
+                        receivers += contact.getName() + " ";
+                    }
+                    else {
+                        receivers += contact.getNumber() + " ";
+                    }
+                }
+                messageOutBlockController.setReceiverLabelText(receivers);
+                messageOutBlockController.setTimeLabelText(messageOut.getTime().format(formatter));
+                messageOutBlockController.setMessageLabelText(messageOut.getContent());
+
+                messageOutBlockController.getDeleteMessageOutButton().setOnAction(event -> {
+                    messageBox.getChildren().remove(messageOutBlockController.getRoot());
+                    messageOutManager.deleteMessage(messageOut.getId());
+                });
+
+                messageBox.getChildren().add(messageOutBlockController.getRoot());
                // HBox messageDataContainer = new HBox();
                 //messageDataContainer.setSpacing(20);
 
-                for (Contact contact:messageOut.getGroupContact().getContacts()) {
-                    //Label contactNumber = new Label(contact.getNumber());
-                    // messageDataContainer.getChildren().add(contactNumber);
-                    if (contact.getName() != null && !contact.getName().isEmpty()) {
-                        Label contactName = new Label("Komu: " + contact.getName());
-                        messageBox.getChildren().addAll(contactName);
-                        //messageDataContainer.getChildren().add(contactName);
-                    } else {
-                        Label contactNumber = new Label("Komu: " + contact.getNumber());
-                        messageBox.getChildren().addAll(contactNumber);
-                    }
-
-                }
-                    Label time = new Label("Čas: " + messageOut.getTime().format(formatter));
-                   // messageDataContainer.getChildren().add(time);
-                    Label content = new Label(messageOut.getContent());
-                    Separator separator = new Separator();
-                    messageBox.getChildren().addAll(time, content, separator);
+//                for (Contact contact:messageOut.getGroupContact().getContacts()) {
+//                    //Label contactNumber = new Label(contact.getNumber());
+//                    // messageDataContainer.getChildren().add(contactNumber);
+//                    if (contact.getName() != null && !contact.getName().isEmpty()) {
+//                        Label contactName = new Label("Komu: " + contact.getName());
+//                        messageBox.getChildren().addAll(contactName);
+//                        //messageDataContainer.getChildren().add(contactName);
+//                    } else {
+//                        Label contactNumber = new Label("Komu: " + contact.getNumber());
+//                        messageBox.getChildren().addAll(contactNumber);
+//                    }
+//
+//                }
+//                    Label time = new Label("Čas: " + messageOut.getTime().format(formatter));
+//                   // messageDataContainer.getChildren().add(time);
+//                    Label content = new Label(messageOut.getContent());
+//                    Separator separator = new Separator();
+//                    messageBox.getChildren().addAll(time, content, separator);
             });
         }
     }

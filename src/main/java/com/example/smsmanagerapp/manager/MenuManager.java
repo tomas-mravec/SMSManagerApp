@@ -1,11 +1,9 @@
 package com.example.smsmanagerapp.manager;
 
-import com.example.smsmanagerapp.gui.controller.MenuControllerImpl;
+import com.example.smsmanagerapp.gui.controller.menu.MenuControllerImpl;
 import com.example.smsmanagerapp.utility.ResourceHelper;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.VBox;
 
 import java.io.IOException;
 

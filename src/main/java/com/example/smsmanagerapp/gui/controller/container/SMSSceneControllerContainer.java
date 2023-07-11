@@ -1,9 +1,9 @@
 package com.example.smsmanagerapp.gui.controller.container;
 
-import com.example.smsmanagerapp.gui.controller.CreateContactController;
-import com.example.smsmanagerapp.gui.controller.HistorySMSMessagesController;
-import com.example.smsmanagerapp.gui.controller.NewSMSMessagesController;
-import com.example.smsmanagerapp.gui.controller.SendNewMessageController;
+import com.example.smsmanagerapp.gui.controller.contact.CreateContactController;
+import com.example.smsmanagerapp.gui.controller.message.HistorySMSMessagesController;
+import com.example.smsmanagerapp.gui.controller.message.NewSMSMessagesController;
+import com.example.smsmanagerapp.gui.controller.send.SendNewMessageController;
 import javafx.scene.Scene;
 
 public interface SMSSceneControllerContainer {

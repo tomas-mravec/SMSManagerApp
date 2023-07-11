@@ -1,14 +1,18 @@
-package com.example.smsmanagerapp.gui.controller;
+package com.example.smsmanagerapp.gui.controller.contact;
 
+import com.example.smsmanagerapp.gui.controller.contact.ContactBlockController;
 import com.example.smsmanagerapp.gui.controller.interfaces.GUIController;
+import com.example.smsmanagerapp.gui.controller.message.MessageBlockController;
 import com.example.smsmanagerapp.table.manager.contact.ContactManager;
 import com.example.smsmanagerapp.data.contact.Contact;
 import com.example.smsmanagerapp.manager.MenuManager;
 import com.example.smsmanagerapp.table.manager.message.interfaces.MessageManager;
 import com.example.smsmanagerapp.table.manager.type.MessageRecencyType;
+import com.example.smsmanagerapp.utility.ResourceHelper;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Parent;
@@ -17,6 +21,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
@@ -81,16 +86,31 @@ public class CreateContactController implements GUIController {
 
     private void showContact(Contact contact) {
         Platform.runLater(() -> {
-            HBox contactData = new HBox();
-            contactData.setSpacing(50);
-            Label numberLabel = new Label();
-            Label nameLabel = new Label();
-            nameLabel.setText(contact.getName());
-            nameLabel.setStyle("-fx-font-size: 19px;");
-            numberLabel.setText(contact.getNumber());
-            numberLabel.setStyle("-fx-font-size: 19px;");
-            contactData.getChildren().addAll(numberLabel, nameLabel);
-            contactBox.getChildren().add(contactData);
+
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(ResourceHelper.getContactBlockResource()));
+            ContactBlockController contactBlockController;
+            try {
+                fxmlLoader.load();
+                contactBlockController = fxmlLoader.getController();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+
+            contactBlockController.setNameLabelText(contact.getName());
+            contactBlockController.setNumberLabelText(contact.getNumber());
+            Separator separator = new Separator();
+            contactBox.getChildren().addAll(contactBlockController.getRoot(), separator);
+
+//            HBox contactData = new HBox();
+//            contactData.setSpacing(50);
+//            Label numberLabel = new Label();
+//            Label nameLabel = new Label();
+//            nameLabel.setText(contact.getName());
+//            nameLabel.setStyle("-fx-font-size: 19px;");
+//            numberLabel.setText(contact.getNumber());
+//            numberLabel.setStyle("-fx-font-size: 19px;");
+//            contactData.getChildren().addAll(numberLabel, nameLabel);
+//            contactBox.getChildren().add(contactData);
         });
     }
 

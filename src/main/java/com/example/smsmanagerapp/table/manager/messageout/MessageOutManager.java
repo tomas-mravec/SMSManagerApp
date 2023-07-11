@@ -7,4 +7,6 @@ public interface MessageOutManager {
    public boolean createNewOutMessage(String content, int groupContactId);
 
    Iterable<? extends Data> getAllMessages();
+
+   void deleteMessage(int id);
 }

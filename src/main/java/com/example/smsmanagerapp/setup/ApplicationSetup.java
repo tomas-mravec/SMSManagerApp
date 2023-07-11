@@ -3,13 +3,12 @@ package com.example.smsmanagerapp.setup;
 import com.example.smsmanagerapp.connection.ConnectionEstablisher;
 import com.example.smsmanagerapp.connection.database.DatabaseConnection;
 import com.example.smsmanagerapp.connection.database.MySQLDatabaseConnection;
-import com.example.smsmanagerapp.gui.controller.CreateContactController;
-import com.example.smsmanagerapp.gui.controller.HistorySMSMessagesController;
-import com.example.smsmanagerapp.gui.controller.NewSMSMessagesController;
-import com.example.smsmanagerapp.gui.controller.SendNewMessageController;
+import com.example.smsmanagerapp.gui.controller.contact.CreateContactController;
+import com.example.smsmanagerapp.gui.controller.message.HistorySMSMessagesController;
+import com.example.smsmanagerapp.gui.controller.message.NewSMSMessagesController;
+import com.example.smsmanagerapp.gui.controller.send.SendNewMessageController;
 import com.example.smsmanagerapp.gui.controller.container.SMSSceneControllerContainer;
 import com.example.smsmanagerapp.gui.controller.container.SMSSceneControllerContainerImpl;
-import com.example.smsmanagerapp.gui.controller.interfaces.GUIController;
 import com.example.smsmanagerapp.table.manager.contact.ContactManager;
 import com.example.smsmanagerapp.table.manager.contact.ContactManagerImpl;
 import com.example.smsmanagerapp.table.manager.group.contact.GroupContactManager;
@@ -28,8 +27,6 @@ import com.example.smsmanagerapp.table.manager.messageout.MessageOutImpl;
 import com.example.smsmanagerapp.table.manager.messageout.MessageOutManager;
 import com.example.smsmanagerapp.utility.DatabaseLoginData;
 import com.example.smsmanagerapp.utility.ResourceHelper;
-import javafx.application.Platform;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
@@ -49,6 +46,7 @@ public class ApplicationSetup {
         this.scene = scene;
         this.guiController = guiController;
         this.stage = stage;
+        stage.setResizable(false);
         this.sceneControllerContainer = new SMSSceneControllerContainerImpl();
     }
 

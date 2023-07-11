@@ -1,20 +1,18 @@
-package com.example.smsmanagerapp.gui.controller;
+package com.example.smsmanagerapp.gui.controller.menu;
 
+import com.example.smsmanagerapp.gui.controller.contact.CreateContactController;
 import com.example.smsmanagerapp.gui.controller.container.SMSSceneControllerContainer;
-import com.example.smsmanagerapp.gui.controller.interfaces.GUIControllerUpdateable;
+import com.example.smsmanagerapp.gui.controller.message.HistorySMSMessagesController;
+import com.example.smsmanagerapp.gui.controller.message.NewSMSMessagesController;
 import com.example.smsmanagerapp.table.manager.contact.ContactManager;
-import com.example.smsmanagerapp.table.manager.contact.ContactManagerImpl;
 import com.example.smsmanagerapp.table.manager.group.contact.GroupContactManager;
 import com.example.smsmanagerapp.table.manager.message.interfaces.MessageManager;
 import com.example.smsmanagerapp.gui.notifier.GUINotifier;
 import com.example.smsmanagerapp.manager.ButtonStyleManager;
 import com.example.smsmanagerapp.sender.MessageSender;
-import com.example.smsmanagerapp.setup.NewSceneSetup;
 import com.example.smsmanagerapp.table.manager.messageout.MessageOutManager;
-import com.example.smsmanagerapp.utility.ResourceHelper;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -79,6 +77,7 @@ public class MenuControllerImpl {
             NewSMSMessagesController newSMSMessagesController = sceneControllerContainer.getNewSMSMessagesController();
             guiNotifier.setGuiController(newSMSMessagesController);
             newSMSMessagesController.setMenu();
+            //newSMSMessagesController.loadMessages();
             stage.setScene(scene);
 
             highlightedButton = "NewSMS";
@@ -114,7 +113,9 @@ public class MenuControllerImpl {
         if (stage.getScene() != scene) {
             GUINotifier guiNotifier = GUINotifier.getInstance();
             guiNotifier.setCurrentScene(null);
-            sceneControllerContainer.getHistorySMSMessagesController().setMenu();
+            HistorySMSMessagesController historySMSMessagesController = sceneControllerContainer.getHistorySMSMessagesController();
+            historySMSMessagesController.setMenu();
+            historySMSMessagesController.loadMessages();
             stage.setScene(scene);
 
 //        NewSceneSetup newSceneSetup = new NewSceneSetup(stage, ResourceHelper.getHistorySMSSceneResource(), messageManagers);

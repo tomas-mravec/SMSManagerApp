@@ -6,11 +6,8 @@ import com.example.smsmanagerapp.data.contact.GroupContact;
 import com.example.smsmanagerapp.data.contact.SMSMessageOut;
 
 import java.sql.*;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-
-import static java.time.LocalDateTime.*;
 
 public class MessageOutImpl implements MessageOutManager {
 
@@ -77,5 +74,20 @@ public class MessageOutImpl implements MessageOutManager {
         }
 
         return messages;
+    }
+
+    @Override
+    public void deleteMessage(int id) {
+        System.out.println("Sprava na vymazanie ma id: " + id);
+        String sql = "DELETE FROM message_out WHERE id = ?";
+        PreparedStatement preparedStatement = null;
+        try {
+            preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setInt(1,id);
+            int resultSet = preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
     }
 }
