@@ -1,5 +1,7 @@
 package com.example.smsmanagerapp.gui.controller.message;
 
+import com.example.smsmanagerapp.gui.controller.interfaces.BlockController;
+import com.example.smsmanagerapp.gui.controller.interfaces.DeletableMessagesController;
 import com.example.smsmanagerapp.gui.controller.menu.MenuControllerImpl;
 import com.example.smsmanagerapp.gui.controller.interfaces.GUIControllerUpdateable;
 import com.example.smsmanagerapp.table.manager.message.interfaces.MessageManager;
@@ -26,7 +28,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
-public class NewSMSMessagesController implements GUIControllerUpdateable{
+public class NewSMSMessagesController implements GUIControllerUpdateable, DeletableMessagesController {
 
     @FXML
     private VBox messageBox;
@@ -89,7 +91,11 @@ public class NewSMSMessagesController implements GUIControllerUpdateable{
 
                 SMSMessage smsMessage = (SMSMessage) data;
 
-                messageBlockController.setContactLabelText(smsMessage.getSender());
+                if (smsMessage.getContact().getName() != null && !smsMessage.getContact().getName().isEmpty()) {
+                    messageBlockController.setContactLabelText(smsMessage.getContact().getName());
+                } else {
+                    messageBlockController.setContactLabelText(smsMessage.getContact().getNumber());
+                }
                 messageBlockController.setTimeLabelText(smsMessage.getRecvTime().format(formatter));
                 messageBlockController.setMessageLabelText(smsMessage.getContent());
                 Separator separator = new Separator();
@@ -219,5 +225,15 @@ public class NewSMSMessagesController implements GUIControllerUpdateable{
 
     public MessageRecencyType getRecencyType() {
         return recencyType;
+    }
+
+    @Override
+    public void markToDelete(BlockController blockController, boolean checked) {
+
+    }
+
+    @Override
+    public void unMarkToDelete(BlockController blockController) {
+
     }
 }

@@ -286,4 +286,21 @@ public class SMSMessageManager implements MessageManager, IMessageListenerObserv
     public void remove(Data data) {
        // smsMessages.remove(data);
     }
+
+    @Override
+    public void deleteMessagesById(List<Integer> identifiers) {
+        if (identifiers != null) {
+            for (Integer id : identifiers) {
+                String sql = "DELETE FROM message WHERE id = ?";
+                PreparedStatement preparedStatement = null;
+                try {
+                    preparedStatement = connection.prepareStatement(sql);
+                    preparedStatement.setInt(1,id);
+                    int resultSet = preparedStatement.executeUpdate();
+                } catch (SQLException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }
+    }
 }

@@ -4,6 +4,7 @@ import com.example.smsmanagerapp.table.manager.type.MessageRecencyType;
 import com.example.smsmanagerapp.data.Data;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 public interface MessageManager {
@@ -19,4 +20,6 @@ public interface MessageManager {
     List<? extends Data> getAllSeenByDate(LocalDate date);
 
     void remove(Data data);
+
+    void deleteMessagesById(List<Integer> integers);
 }

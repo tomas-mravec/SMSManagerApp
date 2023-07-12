@@ -125,29 +125,34 @@ public class SendNewMessageController implements GUIController {
     public void sendMessage() {
 
         String messageContent = textArea.getText();
+        if(messageContent == null || messageContent.isEmpty()) {
 
-        if (scheduledMessageTime == null) {
-            send(new ArrayList<>(contacts), messageContent);
+        } else if (contacts == null || contacts.isEmpty()) {
+            textArea.setText("KWAB");
         } else {
-            List<String> addedContacts = new ArrayList<>(contacts);
-            Runnable task = () -> {
-                Platform.runLater(() -> {
-                    send(new ArrayList<>(addedContacts), messageContent);
-                    System.out.println("Scheduled task executed");
-                    for (String contact : contacts) {
-                        System.out.println(contact);
-                    }
-                });
-            };
+            if (scheduledMessageTime == null) {
+                send(new ArrayList<>(contacts), messageContent);
+            } else {
+                List<String> addedContacts = new ArrayList<>(contacts);
+                Runnable task = () -> {
+                    Platform.runLater(() -> {
+                        send(new ArrayList<>(addedContacts), messageContent);
+                        System.out.println("Scheduled task executed");
+                        for (String contact : contacts) {
+                            System.out.println(contact);
+                        }
+                    });
+                };
 
-            LocalDateTime now = LocalDateTime.now();
-            LocalDateTime executionDateTime = scheduledMessageTime; // Replace with your desired execution LocalDateTime
+                LocalDateTime now = LocalDateTime.now();
+                LocalDateTime executionDateTime = scheduledMessageTime; // Replace with your desired execution LocalDateTime
 
-            long initialDelay = now.until(executionDateTime, ChronoUnit.SECONDS);
-            scheduler.schedule(task, initialDelay, TimeUnit.SECONDS);
+                long initialDelay = now.until(executionDateTime, ChronoUnit.SECONDS);
+                scheduler.schedule(task, initialDelay, TimeUnit.SECONDS);
+            }
+
+            contacts.clear();
         }
-
-        contacts.clear();
     }
 
     public synchronized void send(List<String> contacts, String message) {
