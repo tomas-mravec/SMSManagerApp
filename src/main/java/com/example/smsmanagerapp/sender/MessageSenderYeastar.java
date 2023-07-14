@@ -18,15 +18,15 @@ public class MessageSenderYeastar implements MessageSender {
     @Override
     public void sendMessage(String message, String number) {
         String port = "2";
-        try {
-            String encodedMessage = URLEncoder.encode(message, StandardCharsets.UTF_8.toString());
-            output.println("Action: smscommand");
-            output.println("command: gsm send sms " + port + " " + number + " " + encodedMessage + " " + messageId++);
-            output.println();
-            System.out.println("Poslal som spravu s textom: " + message + " na cislo: " + number);
-        } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException(e);
-        }
+//        try {
+//            String encodedMessage = URLEncoder.encode(message, StandardCharsets.UTF_8.toString());
+//            output.println("Action: smscommand");
+//            output.println("command: gsm send sms " + port + " " + number + " " + encodedMessage + " " + messageId++);
+//            output.println();
+//            System.out.println("Poslal som spravu s textom: " + message + " na cislo: " + number);
+//        } catch (UnsupportedEncodingException e) {
+//            throw new RuntimeException(e);
+//        }
 
     }
 }

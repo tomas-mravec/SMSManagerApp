@@ -49,6 +49,9 @@ public class CreateContactController implements GUIController {
     @FXML
     private ScrollPane scrollPane;
 
+    @FXML
+    private TextField searchField;
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         //menu = MenuManager.getMenuInstance();
@@ -56,6 +59,26 @@ public class CreateContactController implements GUIController {
         conditionNotMetLabel.setVisible(false);
         scrollPane.setStyle("-fx-background-color: transparent; -fx-background-insets: 0; -fx-background-color: white;");
         contactBox.setStyle("-fx-border-color: transparent; -fx-border-width: 0; -fx-background-color: white;");
+
+        searchField.textProperty().addListener((observable, oldValue, newValue) -> {
+            System.out.println("In button listener new search word is " + newValue);
+            searchContacts(newValue);
+        });
+    }
+
+    private void searchContacts(String contactFilter) {
+        eraseContactsOnGUI();
+        filterMessages(contactFilter);
+    }
+
+    private void filterMessages(String contactFilter) {
+        for (Contact contact : contactManager.filterContacts(contactFilter)) {
+            showContact(contact);
+        }
+    }
+
+    private void eraseContactsOnGUI() {
+        contactBox.getChildren().clear();
     }
 
     public void createContact(ActionEvent event) {
@@ -78,7 +101,7 @@ public class CreateContactController implements GUIController {
     }
 
     private void loadContactsWithName() {
-      contactBox.getChildren().clear();
+      eraseContactsOnGUI();
       for (Contact contact : contactManager.getAllContactsWithName()) {
           showContact(contact);
       }

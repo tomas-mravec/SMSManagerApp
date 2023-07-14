@@ -7,4 +7,7 @@ public interface BlockController {
 
     void select();
     void unSelect();
+
+    void selectAsSeen();
+    void unSelectAsSeen();
 }

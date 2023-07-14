@@ -13,14 +13,14 @@
     <Label fx:id="timeLabel" layoutX="268.0" layoutY="16.0" prefHeight="17.0" prefWidth="96.0" />
     <Label fx:id="messageLabel" layoutX="402.0" layoutY="14.0" prefHeight="17.0" prefWidth="364.0" />
     <CheckBox fx:id="deleteCheckBox" layoutX="1081.0" layoutY="16.0" mnemonicParsing="false" prefHeight="16.0" prefWidth="16.0" />
-      <Button fx:id="seenButton" layoutX="36.0" layoutY="12.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="15.0" style="-fx-background-color: white;" textFill="WHITE">
+      <Button fx:id="seenButton" layoutX="27.0" layoutY="12.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="15.0" style="-fx-background-color: white;" textFill="WHITE">
          <graphic>
-          <FontIcon fx:id="seenIcon" iconColor="#8a7e7e" iconLiteral="far-eye" iconSize="17" text="" wrappingWidth="19.0" />
+          <FontIcon fx:id="seenIcon" iconColor="#ff7103" iconLiteral="far-eye" iconSize="17" text="" wrappingWidth="19.0" />
          </graphic>
       </Button>
       <Button fx:id="deleteMessagesButton" layoutX="1037.0" layoutY="12.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="9.0" style="-fx-background-color: white;">
          <graphic>
-          <FontIcon fx:id="deleteIcon" iconColor="#8a7e7e" iconLiteral="far-trash-alt" iconSize="17" text="" wrappingWidth="15.875" />
+          <FontIcon fx:id="deleteIcon" iconColor="#ff7103" iconLiteral="far-trash-alt" iconSize="17" text="" wrappingWidth="15.875" />
          </graphic></Button>
 </children>
 </AnchorPane>

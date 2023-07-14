@@ -2,6 +2,7 @@ package com.example.smsmanagerapp.gui.controller.message;
 
 import com.example.smsmanagerapp.gui.controller.interfaces.BlockController;
 import com.example.smsmanagerapp.gui.controller.interfaces.DeletableMessagesController;
+import com.example.smsmanagerapp.gui.controller.interfaces.MarkableAsSeenMessagesController;
 import com.example.smsmanagerapp.gui.controller.menu.MenuControllerImpl;
 import com.example.smsmanagerapp.gui.controller.interfaces.GUIControllerUpdateable;
 import com.example.smsmanagerapp.table.manager.message.interfaces.MessageManager;
@@ -16,35 +17,59 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.control.Separator;
+import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 
 import java.io.IOException;
 import java.net.URL;
+import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.ResourceBundle;
 
-public class NewSMSMessagesController implements GUIControllerUpdateable, DeletableMessagesController {
+public class NewSMSMessagesController implements GUIControllerUpdateable, DeletableMessagesController, MarkableAsSeenMessagesController {
 
     @FXML
     private VBox messageBox;
-
-    private Node menu;
-    private MenuControllerImpl menuController;
     @FXML
     private AnchorPane rootPane;
 
     @FXML
+    private TextField searchField;
+    private LocalDate dateFilterFrom;
+    private LocalDate dateFilterTo;
+
+    @FXML
+    private DatePicker datePickerFrom;
+
+    @FXML
+    private DatePicker datePickerTo;
+
+    @FXML
     private ScrollPane scrollPane;
+
+    @FXML
+    private CheckBox selectAllToDeleteCheckBox;
+
+    @FXML
+    private CheckBox markAllAsSeenCheckBox;
+
     private List<MessageManager> messageManagers;
     private MessageRecencyType recencyType;
     private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
 
+    private HashMap<BlockController, Integer> messages;
+    private HashMap<BlockController, Integer> messagesToDelete;
+    private HashMap<BlockController, Integer> messagesToHistory;
+    private String senderFilter;
+
     public NewSMSMessagesController() {
+        messages = new HashMap<>();
+        messagesToDelete = new HashMap<>();
+        messagesToHistory = new HashMap<>();
         messageManagers = new ArrayList<>();
         recencyType = MessageRecencyType.NEW_MESSAGE;
     }
@@ -57,6 +82,92 @@ public class NewSMSMessagesController implements GUIControllerUpdateable, Deleta
         scrollPane.setStyle("-fx-background-color: transparent; -fx-background-insets: 0; -fx-background-color: white;");
         messageBox.setStyle("-fx-border-color: transparent; -fx-border-width: 0; -fx-background-color: white;");
         messageBox.getStylesheets().add(getClass().getResource(ResourceHelper.getMessageLabelsStyle()).toExternalForm());
+
+        searchField.textProperty().addListener((observable, oldValue, newValue) -> {
+            System.out.println("In button listener new search word is " + newValue);
+            searchHistoryBySender(newValue);
+        });
+        setUpCheckBoxes();
+    }
+
+    private void setUpCheckBoxes() {
+        selectAllToDeleteCheckBox.selectedProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue) {
+                selectAllMessageBlocks();
+            } else {
+                unSelectAllMessageBlocks();
+            }
+        });
+
+        markAllAsSeenCheckBox.selectedProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue) {
+                selectAllAsSeenMessageBlocks();
+            } else {
+                unSelectAllAsSeenMessageBlocks();
+            }
+        });
+    }
+
+    public void resetDatePicker() {
+        datePickerFrom.setValue(null);
+        datePickerTo.setValue(null);
+        dateFilterFrom = null;
+        dateFilterTo = null;
+        eraseMessagesOnGUI();
+        filterMesssages();
+    }
+
+    private void searchHistoryBySender(String newValue) {
+        System.out.println("in search history by sender New value is: " + newValue);
+        senderFilter = newValue;
+        eraseMessagesOnGUI();
+        System.out.println("I erased messages");
+        filterMesssages();
+    }
+
+    private void filterMesssages() {
+        for (MessageManager messageManager : messageManagers) {
+            for (Data data : messageManager.getFilteredMessages(senderFilter, dateFilterFrom, dateFilterTo, false)) {
+                updateGUI(data);
+            }
+        }
+    }
+
+    private void eraseMessagesOnGUI() {
+        messageBox.getChildren().clear();
+    }
+
+    private void unSelectAllAsSeenMessageBlocks() {
+        for (BlockController blockController : messages.keySet()) {
+            blockController.unSelectAsSeen();
+        }
+    }
+
+    private void selectAllAsSeenMessageBlocks() {
+        for (BlockController blockController : messages.keySet()) {
+            blockController.selectAsSeen();
+        }
+    }
+
+    public void markMessagesAsSeen() {
+        messageManagers.get(0).setMessagesAsSeen(new ArrayList<>(messagesToHistory.values()));
+        for (BlockController blockController : messagesToHistory.keySet()) {
+            messageBox.getChildren().remove(blockController.getRoot());
+        }
+        messages.remove(messagesToHistory.keySet());
+        messagesToHistory.clear();
+    }
+
+    private void unSelectAllMessageBlocks() {
+        for (BlockController blockController : messages.keySet()) {
+            blockController.unSelect();
+        }
+    }
+
+    private void selectAllMessageBlocks() {
+        for (BlockController blockController : messages.keySet()) {
+            blockController.select();
+        }
     }
 
     public void setMenu() {
@@ -72,9 +183,25 @@ public class NewSMSMessagesController implements GUIControllerUpdateable, Deleta
            }
         }
     }
-    public void resetDatePicker(ActionEvent event) {
-        //datePicker.setValue(null);
+
+    public void dateSelected(ActionEvent event) {
+        dateFilterFrom = datePickerFrom.getValue();
+        dateFilterTo = datePickerTo.getValue();
+        if (dateFilterFrom != null && dateFilterTo != null) {
+            eraseMessagesOnGUI();
+            filterMesssages();
+        }
     }
+    public void deleteMarkedMessages() {
+        messageManagers.get(0).deleteMessagesById(new ArrayList<>(messagesToDelete.values()));
+        for (BlockController blockController : messagesToDelete.keySet()) {
+            messageBox.getChildren().remove(blockController.getRoot());
+        }
+        messages.remove(messagesToDelete.keySet());
+        messagesToDelete.clear();
+    }
+
+
     @Override
     public void updateGUI(Data data) {
         if (data != null) {
@@ -90,6 +217,9 @@ public class NewSMSMessagesController implements GUIControllerUpdateable, Deleta
                 }
 
                 SMSMessage smsMessage = (SMSMessage) data;
+                messageBlockController.setDeletableMessageController(this);
+                messageBlockController.setMarkableAsSeen(true);
+                messages.put(messageBlockController, smsMessage.getId());
 
                 if (smsMessage.getContact().getName() != null && !smsMessage.getContact().getName().isEmpty()) {
                     messageBlockController.setContactLabelText(smsMessage.getContact().getName());
@@ -100,103 +230,6 @@ public class NewSMSMessagesController implements GUIControllerUpdateable, Deleta
                 messageBlockController.setMessageLabelText(smsMessage.getContent());
                 Separator separator = new Separator();
                 messageBox.getChildren().addAll(messageBlockController.getRoot(), separator);
-
-
-
-//                SMSMessage smsMessage = (SMSMessage) data;
-//                System.out.println("Som v update gui gui controllera");
-//                System.out.println(((SMSMessage) data).getContact().getNumber() + " Sprava: " + ((SMSMessage) data).getContent());
-//
-//                boolean contactnameExists = false;
-//                VBox messageContainer = new VBox();
-//                VBox downContainer = new VBox();
-//                HBox messageDataContainer = new HBox();
-//                Label senderLabel = new Label();
-//                Label senderNumberLabel = new Label();
-//                Label contactNameLabel = new Label();
-//                Label contactLabel = new Label();
-//                Contact contact = smsMessage.getContact();
-//                senderLabel.setText("Číslo: ");
-//                senderNumberLabel.setText(contact.getNumber());
-//                if (contact.getName() != null && !contact.getName().isEmpty()) {
-//                    contactLabel.setText("Kontakt: ");
-//                    contactNameLabel.setText(contact.getName());
-//                    contactnameExists = true;
-//                }
-//
-//                Label timeLabel = new Label();
-//                timeLabel.setText("Čas: ");
-//                Label timeValueLabel = new Label();
-//                timeValueLabel.setText(smsMessage.getRecvTime().format(formatter));
-//                Label messageLabel = new Label();
-//                messageLabel.setText(smsMessage.getContent());
-//
-//                senderLabel.getStyleClass().add("label-normal");
-//                contactLabel.getStyleClass().add("label-normal");
-//                senderNumberLabel.getStyleClass().add("label-normal");
-//                contactNameLabel.getStyleClass().add("label-normal");
-//                messageLabel.getStyleClass().add("label-normal");
-//                timeLabel.getStyleClass().add("label-normal");
-//                timeValueLabel.getStyleClass().add("label-normal");
-//
-//                senderLabel.getStyleClass().add("label-orange");
-//                contactLabel.getStyleClass().add("label-orange");
-//                timeLabel.getStyleClass().add("label-orange");
-//
-//                senderNumberLabel.getStyleClass().add("label-right-padding");
-//                contactNameLabel.getStyleClass().add("label-right-padding");
-//                timeValueLabel.getStyleClass().add("label-right-padding");
-//
-//               // messageContainer.getStyleClass().add("vbox-spacing");
-//               // messageDataContainer.getStyleClass().add("hbox-bottom-margin");
-//
-//                //downContainer.getStyleClass().add("padding-top");
-//                //messageDataContainer.setSpacing(50);
-//                messageDataContainer.setPadding(new Insets(20,0,0,0));
-//                downContainer.setMargin(downContainer, new Insets(20,0,0,0));
-//                downContainer.setSpacing(20);
-////                senderLabel.setWrapText(true); // Enable text wrapping
-////                senderLabel.setMaxWidth(Double.MAX_VALUE);
-////                timeLabel.setWrapText(true); // Enable text wrapping
-////                timeLabel.setMaxWidth(Double.MAX_VALUE);
-////                messageLabel.setWrapText(true); // Enable text wrapping
-////                messageLabel.setMaxWidth(Double.MAX_VALUE);
-//
-//
-//                Button sendToHistory = new Button();
-//                sendToHistory.setText("Videné");
-//                sendToHistory.setOnAction(event -> {
-//                    System.out.println("Bol stlaceny button na odoslanie do historie");
-//                    sendMessageToHistory(smsMessage);
-//                    messageBox.getChildren().remove(messageContainer);
-//                });
-//
-//                Separator separator = new Separator();
-////                separator.getStylesheets().add(getClass().getResource("/com/example/smsmanagerapp/css/message-separator.css").toExternalForm());
-////                separator.getStyleClass().add("message-separator");
-//                 //separator.setStyle("-fx-border-color:#D2691E;-fx-border-width:5;");
-////                separator.setStyle(""
-////                        + "-fx-border-width: 3px;"
-////                        + "-fx-border-color: black;"
-////                        + "-fx-padding: 0px;"
-////                        + "");
-//
-//
-//                if (contactnameExists) {
-//                    messageDataContainer.getChildren().addAll(senderLabel, senderNumberLabel, contactLabel, contactNameLabel, timeLabel, timeValueLabel);
-//                } else {
-//                    messageDataContainer.getChildren().addAll(senderLabel, senderNumberLabel, timeLabel, timeValueLabel);
-//                }
-//
-//
-//                downContainer.getChildren().addAll(messageLabel, sendToHistory, separator);
-//                messageContainer.getChildren().addAll(messageDataContainer, downContainer);
-////        messageContainer.setMaxWidth(Double.MAX_VALUE);
-////        messageBox.setMaxWidth(Double.MAX_VALUE);
-////        VBox.setVgrow(messageBox, Priority.ALWAYS);
-////        VBox.setVgrow(messageContainer, Priority.ALWAYS);
-//
-//                messageBox.getChildren().add(messageContainer);
 
             });
         }
@@ -229,11 +262,35 @@ public class NewSMSMessagesController implements GUIControllerUpdateable, Deleta
 
     @Override
     public void markToDelete(BlockController blockController, boolean checked) {
-
+        if (checked) {
+            messagesToDelete.put(blockController, messages.get(blockController));
+        } else {
+            messageManagers.get(0).deleteMessagesById(List.of(messages.get(blockController)));
+            messageBox.getChildren().remove(blockController.getRoot());
+            messages.remove(blockController);
+            messagesToDelete.remove(blockController);
+        }
     }
 
     @Override
     public void unMarkToDelete(BlockController blockController) {
+        messagesToDelete.remove(blockController);
+    }
 
+    @Override
+    public void markAsSeen(BlockController blockController, boolean checked) {
+        if (checked) {
+            messagesToHistory.put(blockController, messages.get(blockController));
+        } else {
+            messageManagers.get(0).setMessagesAsSeen(List.of(messages.get(blockController)));
+            messageBox.getChildren().remove(blockController.getRoot());
+            messages.remove(blockController);
+            messagesToHistory.remove(blockController);
+        }
+    }
+
+    @Override
+    public void unMarkAsSeen(BlockController blockController) {
+        messagesToHistory.remove(blockController);
     }
 }

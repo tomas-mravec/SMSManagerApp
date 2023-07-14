@@ -104,4 +104,26 @@ public class ContactManagerImpl implements ContactManager {
         }
         return contacts;
     }
+
+    @Override
+    public List<Contact> filterContacts(String contactFilter) {
+        List<Contact> contacts = new ArrayList<>();
+
+        String query = "SELECT * FROM contact WHERE name IS NOT NULL AND (number LIKE CONCAT('%', ?, '%') OR name LIKE CONCAT('%', ?, '%'))";
+        PreparedStatement preparedStatement = null;
+        try {
+            preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setString(1, contactFilter);
+            preparedStatement.setString(2, contactFilter);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            while  (resultSet.next()) {
+                Contact contact = new Contact(resultSet.getString("number"));
+                contact.setName(resultSet.getString("name"));
+                contacts.add(contact);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return contacts;
+    }
 }

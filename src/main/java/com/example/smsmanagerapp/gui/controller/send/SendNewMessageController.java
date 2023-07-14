@@ -29,6 +29,7 @@ import javafx.scene.layout.VBox;
 
 import java.io.IOException;
 import java.net.URL;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
@@ -76,6 +77,19 @@ public class SendNewMessageController implements GUIController {
     @FXML
     private VBox receiverBox;
 
+    @FXML
+    private TextField searchField;
+
+    @FXML
+    private DatePicker datePickerFrom;
+    @FXML
+    private DatePicker datePickerTo;
+
+    private LocalDate dateFilterFrom;
+    private LocalDate dateFilterTo;
+    private String receiverFilter;
+
+
     public SendNewMessageController() {
         contacts = new ArrayList<>();
         timer = new Timer();
@@ -84,8 +98,28 @@ public class SendNewMessageController implements GUIController {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        //menu = MenuManager.getMenuInstance();
-        //rootPane.getChildren().add(0, menu);
+
+        searchField.textProperty().addListener((observable, oldValue, newValue) -> {
+            System.out.println("In button listener new search word is " + newValue);
+            searchMessagesBySender(newValue);
+        });
+    }
+
+    private void searchMessagesBySender(String newValue) {
+        receiverFilter = newValue;
+        eraseMessagesOnGUI();
+        filterMesssages();
+    }
+
+    private void filterMesssages() {
+       for (Data data : messageOutManager.filterMessages(receiverFilter, dateFilterFrom, dateFilterTo)) {
+           updateGUI(data);
+       }
+
+    }
+
+    private void eraseMessagesOnGUI() {
+        messageBox.getChildren().clear();
     }
 
     public void addReceiver() {
@@ -112,6 +146,29 @@ public class SendNewMessageController implements GUIController {
             });
 
         });
+    }
+
+    public void resetDatePicker() {
+        datePickerFrom.setValue(null);
+        datePickerTo.setValue(null);
+        dateFilterFrom = null;
+        dateFilterTo = null;
+        eraseMessagesOnGUI();
+        filterMesssages();
+    }
+
+    public void datePicked() {
+        dateFilterFrom = datePickerFrom.getValue();
+        dateFilterTo = datePickerTo.getValue();
+        System.out.println("Date picked");
+        if (dateFilterFrom != null && dateFilterTo != null) {
+            eraseMessagesOnGUI();
+            filterMesssages();
+        }
+    }
+
+    public void deleteAllMessagesOut() {
+
     }
 
     public void removeAllReceivers() {
@@ -256,27 +313,6 @@ public class SendNewMessageController implements GUIController {
                 });
 
                 messageBox.getChildren().add(messageOutBlockController.getRoot());
-               // HBox messageDataContainer = new HBox();
-                //messageDataContainer.setSpacing(20);
-
-//                for (Contact contact:messageOut.getGroupContact().getContacts()) {
-//                    //Label contactNumber = new Label(contact.getNumber());
-//                    // messageDataContainer.getChildren().add(contactNumber);
-//                    if (contact.getName() != null && !contact.getName().isEmpty()) {
-//                        Label contactName = new Label("Komu: " + contact.getName());
-//                        messageBox.getChildren().addAll(contactName);
-//                        //messageDataContainer.getChildren().add(contactName);
-//                    } else {
-//                        Label contactNumber = new Label("Komu: " + contact.getNumber());
-//                        messageBox.getChildren().addAll(contactNumber);
-//                    }
-//
-//                }
-//                    Label time = new Label("Čas: " + messageOut.getTime().format(formatter));
-//                   // messageDataContainer.getChildren().add(time);
-//                    Label content = new Label(messageOut.getContent());
-//                    Separator separator = new Separator();
-//                    messageBox.getChildren().addAll(time, content, separator);
             });
         }
     }

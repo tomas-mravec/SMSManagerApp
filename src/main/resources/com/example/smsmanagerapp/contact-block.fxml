@@ -6,6 +6,6 @@
 <AnchorPane fx:id="rootPane" prefHeight="47.0" prefWidth="475.0" style="-fx-background-color: white;" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.smsmanagerapp.gui.controller.contact.ContactBlockController">
     <children>
         <Label fx:id="nameLabel" layoutX="36.0" layoutY="17.0" prefHeight="17.0" prefWidth="189.0" />
-        <Label fx:id="numberLabel" alignment="BOTTOM_RIGHT" layoutX="264.0" layoutY="15.0" prefHeight="17.0" prefWidth="161.0" />
+        <Label fx:id="numberLabel" alignment="BOTTOM_RIGHT" layoutX="233.0" layoutY="15.0" prefHeight="17.0" prefWidth="159.0" />
     </children>
 </AnchorPane>

@@ -79,9 +79,17 @@
             <Font name="System Bold" size="19.0" />
          </font>
       </Label>
-      <TextField layoutX="469.0" layoutY="446.0" promptText="Hľadať" />
-      <DatePicker layoutX="684.0" layoutY="446.0" promptText="Dátum" />
-      <DatePicker layoutX="903.0" layoutY="446.0" promptText="Dátum" />
+      <TextField fx:id="searchField" layoutX="469.0" layoutY="446.0" promptText="Hľadať" />
+      <DatePicker fx:id="datePickerFrom" layoutX="703.0" layoutY="446.0" onAction="#datePicked" promptText="Dátum" />
+      <DatePicker fx:id="datePickerTo" layoutX="942.0" layoutY="446.0" onAction="#datePicked" promptText="Dátum" />
       <FontIcon iconColor="#4a4a4a" iconLiteral="fab-sistrix" iconSize="20" layoutX="445.0" layoutY="465.0" text="" />
+      <Label layoutX="678.0" layoutY="450.0" text="Od:" />
+      <Label layoutX="919.0" layoutY="450.0" text="Do:" />
+      <Button fx:id="deleteAllButton" layoutX="1419.0" layoutY="445.0" mnemonicParsing="false" onAction="#deleteAllMessagesOut" style="-fx-background-color: white;">
+         <graphic>
+            <FontIcon iconColor="#ff7103" iconLiteral="fltral-delete-forever-24" iconSize="18" />
+         </graphic>
+      </Button>
+      <Button layoutX="1130.0" layoutY="445.0" mnemonicParsing="false" onAction="#resetDatePicker" text="Button" />
    </children>
 </AnchorPane>

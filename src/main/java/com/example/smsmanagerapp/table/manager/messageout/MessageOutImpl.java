@@ -6,6 +6,7 @@ import com.example.smsmanagerapp.data.contact.GroupContact;
 import com.example.smsmanagerapp.data.contact.SMSMessageOut;
 
 import java.sql.*;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,6 +36,77 @@ public class MessageOutImpl implements MessageOutManager {
             throw new RuntimeException(e);
         }
         return true;
+    }
+
+    public Iterable<? extends Data> filterMessages(String receiverFilter, LocalDate dateFrom, LocalDate dateTo) {
+        List<SMSMessageOut> messagesOut = new ArrayList<>();
+
+        String sql = "SELECT DISTINCT g.id FROM group_contact g JOIN contact c ON g.number = c.number" +
+                " WHERE (g.number LIKE CONCAT('%', ?, '%') OR c.name LIKE CONCAT('%', ?, '%'))"; //+
+               //" GROUP BY g.id LIMIT 1";
+
+        boolean dateFiltered = false;
+        if (dateFrom != null && dateTo != null ) {
+            dateFiltered = true;
+            System.out.println("Date filtering = true");
+        }
+
+        PreparedStatement preparedStatement = null;
+        try {
+            preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setString(1, receiverFilter);
+            preparedStatement.setString(2, receiverFilter);
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            while (resultSet.next()) {
+                System.out.println("Group id je: " + resultSet.getInt(1));
+
+                String sqlFindMessages = "SELECT * FROM message_out WHERE group_contact_id = ?";
+                if (dateFiltered) {
+                    sqlFindMessages += " AND (DATE(time) BETWEEN ? AND ?)";
+                    System.out.println("Pridavam sql");
+                }
+                preparedStatement = connection.prepareStatement(sqlFindMessages);
+                preparedStatement.setInt(1, resultSet.getInt(1));
+                if (dateFiltered) {
+                    preparedStatement.setDate(2, Date.valueOf(dateFrom));
+                    preparedStatement.setDate(3, Date.valueOf(dateTo));
+                    System.out.println("Pridavam parametre");
+                }
+                ResultSet messagesSet = preparedStatement.executeQuery();
+
+                while (messagesSet.next()) {
+                    SMSMessageOut smsMessageOut = new SMSMessageOut();
+                    smsMessageOut.setId(messagesSet.getInt("id"));
+                    smsMessageOut.setContent(messagesSet.getString("content"));
+                    smsMessageOut.setTime(messagesSet.getTimestamp("time").toLocalDateTime());
+                    System.out.println("Content je: " + smsMessageOut.getContent());
+
+                    String sqlFindContacts = "SELECT g.number, c.name FROM group_contact g" +
+                            " JOIN contact c ON g.number = c.number" +
+                            " WHERE g.id = ?";
+                    preparedStatement = connection.prepareStatement(sqlFindContacts);
+                    preparedStatement.setInt(1, resultSet.getInt(1));
+                    ResultSet contactSet = preparedStatement.executeQuery();
+
+                    GroupContact groupContact = new GroupContact();
+                    while (contactSet.next()) {
+                        System.out.println("Kontakt: " + contactSet.getString("g.number"));
+                        Contact contact = new Contact(contactSet.getString("g.number"));
+                        contact.setName(contactSet.getString("c.name"));
+                        groupContact.addContact(contact);
+                    }
+                    smsMessageOut.setGroupContact(groupContact);
+                    messagesOut.add(smsMessageOut);
+                }
+
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        return messagesOut;
     }
 
     @Override

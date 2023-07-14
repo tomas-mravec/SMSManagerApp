@@ -13,4 +13,6 @@ public interface ContactManager {
     int updateContactName(String number, String contactName);
 
    List<Contact> getAllContactsWithName();
+
+    List<Contact> filterContacts(String contactFilter);
 }

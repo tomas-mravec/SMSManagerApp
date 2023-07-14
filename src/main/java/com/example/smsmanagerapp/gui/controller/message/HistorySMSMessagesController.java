@@ -51,7 +51,10 @@ public class HistorySMSMessagesController implements DeletableMessagesController
     private MessageRecencyType recencyType;
     private String senderFilter;
     @FXML
-    private DatePicker datePicker;
+    private DatePicker datePickerFrom;
+
+    @FXML
+    private DatePicker datePickerTo;
 
     @FXML
     private ScrollPane scrollPane;
@@ -59,7 +62,8 @@ public class HistorySMSMessagesController implements DeletableMessagesController
     @FXML
     private CheckBox selectAllToDeleteCheckBox;
 
-    private LocalDate dateFilter;
+    private LocalDate dateFilterFrom;
+    private LocalDate dateFilterTo;
     private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
 
     private HashMap<BlockController, Integer> messages;
@@ -156,16 +160,6 @@ public class HistorySMSMessagesController implements DeletableMessagesController
         messagesToDelete.clear();
     }
 
-
-//    @Override
-//    public void markAsSeen(BlockController parent, boolean checked) {
-//        if (checked) {
-//            messagesToMarkSeen.put(parent, messages.get(parent));
-//        } else {
-//
-//        }
-//    }
-
     @Override
     public void markToDelete(BlockController blockController, boolean checked) {
         if (checked) {
@@ -178,25 +172,23 @@ public class HistorySMSMessagesController implements DeletableMessagesController
         }
     }
 
-//    @Override
-//    public void unMarkAsSeen(Parent parent) {
-//        messagesToMarkSeen.remove(parent);
-//    }
-
     @Override
     public void unMarkToDelete(BlockController blockController) {
         messagesToDelete.remove(blockController);
     }
 
     public void dateSelected(ActionEvent event) {
-        dateFilter = datePicker.getValue();
-        eraseMessagesOnGUI();
-        filterMesssages();
+        dateFilterFrom = datePickerFrom.getValue();
+        dateFilterTo = datePickerTo.getValue();
+        if (dateFilterFrom != null && dateFilterTo != null) {
+            eraseMessagesOnGUI();
+            filterMesssages();
+        }
     }
 
     private void filterMesssages() {
         for (MessageManager messageManager : messageManagers) {
-            for (Data data : messageManager.getFilteredMessages(senderFilter, dateFilter)) {
+            for (Data data : messageManager.getFilteredMessages(senderFilter, dateFilterFrom, dateFilterTo, true)) {
                 updateGUI(data);
             }
         }
@@ -234,7 +226,12 @@ public class HistorySMSMessagesController implements DeletableMessagesController
     }
 
     public void resetDatePicker(ActionEvent event) {
-        datePicker.setValue(null);
+        datePickerFrom.setValue(null);
+        datePickerTo.setValue(null);
+        dateFilterFrom = null;
+        dateFilterTo = null;
+        eraseMessagesOnGUI();
+        filterMesssages();
     }
 
     @Override

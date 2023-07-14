@@ -3,6 +3,7 @@ package com.example.smsmanagerapp.gui.controller.message;
 import com.example.smsmanagerapp.gui.controller.interfaces.BlockController;
 import com.example.smsmanagerapp.gui.controller.interfaces.DeletableMessagesController;
 import com.example.smsmanagerapp.gui.controller.interfaces.GUIControllerUpdateable;
+import com.example.smsmanagerapp.gui.controller.interfaces.MarkableAsSeenMessagesController;
 import com.example.smsmanagerapp.utility.ResourceHelper;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -36,26 +37,26 @@ public class MessageBlockController implements Initializable, BlockController {
     private Label messageLabel;
 
     @FXML
-    private Button deleteButton;
-
-    @FXML
     private CheckBox deleteCheckBox;
 
     @FXML
     private AnchorPane rootPane;
 
     @FXML
-    private Button markAsSeenButton;
-
-    @FXML
     private Button deleteMessagesButton;
 
     private DeletableMessagesController controller;
+    private boolean markableAsSeen;
     private Separator separator;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         setUpCheckBoxes();
+        seenButton.setVisible(false);
+        seenCheckBox.setVisible(false);
+        deleteMessagesButton.setVisible(false);
+        deleteCheckBox.setVisible(false);
+
     }
 
     private void setUpCheckBoxes() {
@@ -63,14 +64,6 @@ public class MessageBlockController implements Initializable, BlockController {
         deleteMessagesButton.setOnAction(event -> {
             controller.markToDelete(this, false);
         });
-
-//        seenCheckBox.selectedProperty().addListener((observable, oldValue, newValue) -> {
-//            if (newValue) {
-//                controller.markAsSeen(rootPane, true);
-//            } else {
-//                controller.unMarkAsSeen(rootPane);
-//            }
-//        });
 
         deleteCheckBox.selectedProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue) {
@@ -93,11 +86,31 @@ public class MessageBlockController implements Initializable, BlockController {
     @Override
     public void select() {
         deleteCheckBox.setSelected(true);
+        deleteCheckBox.setVisible(true);
+        deleteMessagesButton.setVisible(true);
     }
 
     @Override
     public void unSelect() {
         deleteCheckBox.setSelected(false);
+        deleteCheckBox.setVisible(false);
+        deleteMessagesButton.setVisible(false);
+    }
+
+    @Override
+    public void selectAsSeen() {
+        if (markableAsSeen)
+            seenCheckBox.setSelected(true);
+            seenButton.setVisible(true);
+            seenCheckBox.setVisible(true);
+    }
+
+    @Override
+    public void unSelectAsSeen() {
+        if (markableAsSeen)
+            seenCheckBox.setSelected(false);
+            seenButton.setVisible(false);
+            seenCheckBox.setVisible(false);
     }
 
     public void setContactLabelText(String text) {
@@ -113,11 +126,23 @@ public class MessageBlockController implements Initializable, BlockController {
     }
 
     public void openIcons() {
-
+        deleteMessagesButton.setVisible(true);
+        deleteCheckBox.setVisible(true);
+        if (markableAsSeen) {
+            seenButton.setVisible(true);
+            seenCheckBox.setVisible(true);
+        }
     }
 
     public void closeIcons() {
-
+        if (!deleteCheckBox.isSelected()) {
+            deleteCheckBox.setVisible(false);
+            deleteMessagesButton.setVisible(false);
+        }
+        if (markableAsSeen && !seenCheckBox.isSelected()) {
+            seenCheckBox.setVisible(false);
+            seenButton.setVisible(false);
+        }
     }
 
     public void addSeparator(Separator separator) {
@@ -126,5 +151,23 @@ public class MessageBlockController implements Initializable, BlockController {
 
     public Separator getSeparator() {
         return separator;
+    }
+
+    public void setMarkableAsSeen(boolean markableAsSeen) {
+        this.markableAsSeen = markableAsSeen;
+        if (markableAsSeen) {
+            seenButton.setOnAction(event -> {
+                ((MarkableAsSeenMessagesController)controller).markAsSeen(this, false);
+            });
+
+            seenCheckBox.selectedProperty().addListener((observable, oldValue, newValue) -> {
+                if (newValue && markableAsSeen) {
+                    ((MarkableAsSeenMessagesController) controller).markAsSeen(this, true);
+                } else if(!newValue && markableAsSeen) {
+                    ((MarkableAsSeenMessagesController) controller).unMarkAsSeen(this);
+                }
+            });
+
+        }
     }
 }

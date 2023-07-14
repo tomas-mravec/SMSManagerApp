@@ -186,38 +186,58 @@ public class SMSMessageManager implements MessageManager, IMessageListenerObserv
     }
 
     @Override
-    public List<? extends Data> getFilteredMessages(String filter, LocalDate dateFilter) {
+    public void setMessagesAsSeen(List<Integer> identifiers) {
+        if (identifiers != null) {
+            for (Integer id : identifiers) {
+                String sql = "UPDATE message SET seen = true WHERE id = ?";
+                PreparedStatement preparedStatement = null;
+                try {
+                    preparedStatement = connection.prepareStatement(sql);
+                    preparedStatement.setInt(1,id);
+                    int resultSet = preparedStatement.executeUpdate();
+                } catch (SQLException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }
+    }
+
+    @Override
+    public List<? extends Data> getFilteredMessages(String filter, LocalDate dateFilterFrom, LocalDate dateFilterTo, boolean seen) {
         boolean isStringFiltered = false;
         boolean isDateFiltered = false;
 
         String query = "SELECT * FROM message m LEFT JOIN contact c ON c.number = m.sender WHERE m.seen = ?";
-       //String query = "SELECT * FROM message WHERE seen = ?";
+
         String filterQuery = "(m.sender LIKE CONCAT('%', ?, '%') OR c.name LIKE CONCAT('%', ?, '%'))";
 
+        String dateFilterQuery = "DATE(m.received_time) BETWEEN ? AND ?";
 
-        String dateFilterQuery = "DATE(m.received_time) = ?";
+
         List<SMSMessage> smsMessages = new ArrayList<>();
         try {
             if (filter != null && !filter.isEmpty()) {
                 query += " AND " + filterQuery;
                 isStringFiltered = true;
             }
-            if (dateFilter != null) {
+            if (dateFilterFrom != null && dateFilterTo != null) {
                 query += " AND " + dateFilterQuery;
                 isDateFiltered = true;
             }
             System.out.println("Query is: " + query);
             PreparedStatement preparedStatement = connection.prepareStatement(query);
-            preparedStatement.setBoolean(1, true);
+            preparedStatement.setBoolean(1, seen);
             if (isStringFiltered) {
                preparedStatement.setString(2, filter);
                preparedStatement.setString(3, filter);
             }
             if (isDateFiltered) {
                 if (isStringFiltered) {
-                    preparedStatement.setDate(4, Date.valueOf(dateFilter));
+                    preparedStatement.setDate(4, Date.valueOf(dateFilterFrom));
+                    preparedStatement.setDate(5, Date.valueOf(dateFilterTo));
                 } else {
-                    preparedStatement.setDate(2, Date.valueOf(dateFilter));
+                    preparedStatement.setDate(2, Date.valueOf(dateFilterFrom));
+                    preparedStatement.setDate(3, Date.valueOf(dateFilterTo));
                 }
             }
             ResultSet resultSet = preparedStatement.executeQuery();
