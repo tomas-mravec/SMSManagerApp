@@ -1,5 +1,6 @@
 package com.example.smsmanagerapp.table.manager.message.interfaces;
 
+import com.example.smsmanagerapp.gui.updater.MessagePageManager;
 import com.example.smsmanagerapp.table.manager.type.MessageRecencyType;
 import com.example.smsmanagerapp.data.Data;
 
@@ -23,5 +24,11 @@ public interface MessageManager {
 
     void remove(Data data);
 
+    int getNumberOfMessages(boolean seen);
+
     void deleteMessagesById(List<Integer> integers);
+
+    void addPageManagerToNotifyWhenMessageChangesToSeen(MessagePageManager pageManager);
+
+    Iterable<? extends Data> getPageMessages(int i, int page_limit, boolean seen);
 }

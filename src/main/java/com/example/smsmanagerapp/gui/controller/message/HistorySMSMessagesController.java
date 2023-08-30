@@ -2,8 +2,11 @@ package com.example.smsmanagerapp.gui.controller.message;
 
 import com.example.smsmanagerapp.gui.controller.interfaces.BlockController;
 import com.example.smsmanagerapp.gui.controller.interfaces.DeletableMessagesController;
+import com.example.smsmanagerapp.gui.controller.interfaces.UnboxableMessagesController;
 import com.example.smsmanagerapp.gui.controller.menu.MenuControllerImpl;
 import com.example.smsmanagerapp.gui.controller.interfaces.GUIControllerUpdateable;
+import com.example.smsmanagerapp.gui.updater.GUIMessageUpdater;
+import com.example.smsmanagerapp.gui.updater.MessagePageManager;
 import com.example.smsmanagerapp.table.manager.message.interfaces.MessageManager;
 import com.example.smsmanagerapp.table.manager.type.MessageRecencyType;
 import com.example.smsmanagerapp.data.Data;
@@ -19,23 +22,22 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
 import java.io.IOException;
 import java.net.URL;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.ResourceBundle;
+import java.util.*;
+import java.util.stream.Collectors;
 
-public class HistorySMSMessagesController implements DeletableMessagesController, Initializable, GUIControllerUpdateable {
+public class HistorySMSMessagesController implements DeletableMessagesController, Initializable, GUIControllerUpdateable, UnboxableMessagesController {
 
     private Node menu;
 
-    @FXML
-    private VBox messageBox;
+//    @FXML
+//    private VBox messageBox;
 
     @FXML
     private AnchorPane rootPane;
@@ -43,6 +45,9 @@ public class HistorySMSMessagesController implements DeletableMessagesController
     @FXML
     private TextField searchField;
     private List<MessageManager> messageManagers;
+
+    @FXML
+    private AnchorPane pagePane;
 
     @FXML
     private Button resetDateButton;
@@ -62,17 +67,24 @@ public class HistorySMSMessagesController implements DeletableMessagesController
     @FXML
     private CheckBox selectAllToDeleteCheckBox;
 
+    @FXML
+    private HBox buttonBox;
+
     private LocalDate dateFilterFrom;
     private LocalDate dateFilterTo;
     private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
 
-    private HashMap<BlockController, Integer> messages;
-    private HashMap<BlockController, Integer> messagesToDelete;
+    private HashMap<BlockController, SMSMessage> messages;
+    private HashMap<BlockController, SMSMessage> messagesToDelete;
+    private final int MAX_MESSAGES_ON_PAGE = 10;
+
+    private MessagePageManager messagePageManager;
 
     public HistorySMSMessagesController() {
         messages = new HashMap<>();
         messagesToDelete = new HashMap<>();
         messageManagers = new ArrayList<>();
+
         recencyType = MessageRecencyType.HISTORY_MESSAGE;
     }
 
@@ -101,20 +113,16 @@ public class HistorySMSMessagesController implements DeletableMessagesController
         });
 
         scrollPane.setStyle("-fx-background-color: transparent; -fx-background-insets: 0; -fx-background-color: white;");
-        messageBox.setStyle("-fx-border-color: transparent; -fx-border-width: 0; -fx-background-color: white;");
-        messageBox.getStylesheets().add(getClass().getResource(ResourceHelper.getMessageLabelsStyle()).toExternalForm());
+        //messageBox.setStyle("-fx-border-color: transparent; -fx-border-width: 0; -fx-background-color: white;");
+        //messageBox.getStylesheets().add(getClass().getResource(ResourceHelper.getMessageLabelsStyle()).toExternalForm());
     }
 
     private void unSelectAllMessageBlocks() {
-        for (BlockController blockController : messages.keySet()) {
-            blockController.unSelect();
-        }
+        messagePageManager.unSelectAllMessagesToDelete();
     }
 
     private void selectAllMessageBlocks() {
-        for (BlockController blockController : messages.keySet()) {
-            blockController.select();
-        }
+        messagePageManager.selectAllMessagesToDelete();
     }
 
     public void setMenu() {
@@ -123,58 +131,46 @@ public class HistorySMSMessagesController implements DeletableMessagesController
 
     @Override
     public void updateGUI(Data data) {
-        if (data != null) {
-            Platform.runLater(() -> {
-                Parent parent;
-                FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(ResourceHelper.getMessageBlockResource()));
-                MessageBlockController messageBlockController;
-                try {
-                    parent = fxmlLoader.load();
-                    messageBlockController = fxmlLoader.getController();
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                 }
+    }
 
-                SMSMessage smsMessage = (SMSMessage) data;
+    @Override
+    public void addMessageBlock(MessageBlockController controller, SMSMessage smsMessage) {
+        this.messages.put(controller, smsMessage);
+    }
 
-                messageBlockController.setDeletableMessageController(this);
-                messages.put(messageBlockController, smsMessage.getId());
 
-                messageBlockController.setContactLabelText(smsMessage.getSender());
-                messageBlockController.setTimeLabelText(smsMessage.getRecvTime().format(formatter));
-                messageBlockController.setMessageLabelText(smsMessage.getContent());
-                Separator separator = new Separator();
-                messageBlockController.addSeparator(separator);
-                messageBox.getChildren().addAll(messageBlockController.getRoot(), separator);
-
-            });
-        }
+    public List<Integer> getIdentifiersFromMessages(Collection<SMSMessage> smsMessages) {
+       return smsMessages.stream()
+                .map(message -> message.getId())
+                .collect(Collectors.toList());
     }
 
     public void deleteMarkedMessages() {
-        messageManagers.get(0).deleteMessagesById(new ArrayList<>(messagesToDelete.values()));
-        for (BlockController blockController : messagesToDelete.keySet()) {
-            messageBox.getChildren().remove(blockController.getRoot());
-        }
-        messages.remove(messagesToDelete.keySet());
-        messagesToDelete.clear();
+//        messageManagers.get(0).deleteMessagesById(getIdentifiersFromMessages(messagesToDelete.values()));
+//        for (BlockController blockController : messagesToDelete.keySet()) {
+//            messageBox.getChildren().remove(blockController.getRoot());
+//        }
+//        messages.remove(messagesToDelete.keySet());
+//        messagesToDelete.clear();
+        messagePageManager.deleteMarkedMessages();
     }
 
     @Override
     public void markToDelete(BlockController blockController, boolean checked) {
-        if (checked) {
-            messagesToDelete.put(blockController, messages.get(blockController));
-        } else {
-            messageManagers.get(0).deleteMessagesById(List.of(messages.get(blockController)));
-            messageBox.getChildren().remove(blockController.getRoot());
-            messages.remove(blockController);
-            messagesToDelete.remove(blockController);
-        }
+//        if (checked) {
+//            messagesToDelete.put(blockController, messages.get(blockController));
+//        } else {
+//            messageManagers.get(0).deleteMessagesById(getIdentifiersFromMessages(List.of(messages.get(blockController))));
+//            messageBox.getChildren().remove(blockController.getRoot());
+//            messages.remove(blockController);
+//            messagesToDelete.remove(blockController);
+//        }
+
     }
 
     @Override
     public void unMarkToDelete(BlockController blockController) {
-        messagesToDelete.remove(blockController);
+//        messagesToDelete.remove(blockController);
     }
 
     public void dateSelected(ActionEvent event) {
@@ -203,12 +199,66 @@ public class HistorySMSMessagesController implements DeletableMessagesController
     }
 
     private void eraseMessagesOnGUI() {
-        messageBox.getChildren().clear();
+       // messageBox.getChildren().clear();
     }
 
     @Override
     public void addMessageManager(MessageManager messageManager) {
         this.messageManagers.add(messageManager);
+        messagePageManager = new MessagePageManager(pagePane, messageManager, false, MAX_MESSAGES_ON_PAGE, buttonBox);
+        messageManager.addPageManagerToNotifyWhenMessageChangesToSeen(messagePageManager);
+        //setUpPages(messageManager.getNumberOfMessages(true));
+        //setUpListButtons(messageManager.getNumberOfMessages(true));
+    }
+
+//    private void setUpPages(int numberOfMessages) {
+//        double result = (double) numberOfMessages / MAX_MESSAGES_ON_PAGE;
+//        int numberOfPages =(int) Math.ceil(result);
+//        System.out.println("Number of seen messages je: " + numberOfMessages + " Result je: " + result + " Number of pages je: " + numberOfPages);
+//        for(int i = 0; i < numberOfPages;i++) {
+//            System.out.println("Vytvaram button num: " + i);
+//            try {
+//                FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(ResourceHelper.getPageButtonResource()));
+//                Button pageButton = fxmlLoader.load();
+//                pageButton.setText(i + 1 + "");
+//                buttonBox.setHgrow(pageButton,javafx.scene.layout.Priority.ALWAYS);
+//                buttonBox.getChildren().add(pageButton);
+//                int id = i;
+//                pageButton.setOnAction(event -> {
+//                    messagePageManager.switchPage(id);
+//                });
+//            } catch (Exception e) {
+//                throw new RuntimeException(e);
+//            }
+//        }
+//        messagePageManager.switchPage(0);
+//    }
+
+//    private void setUpListButtons(int numberOfMessages) {
+//        double result = (double) numberOfMessages / MAX_MESSAGES_ON_PAGE;
+//        int numberOfPages =(int) Math.ceil(result);
+//        System.out.println("Number of messages je: " + numberOfMessages + " Result je: " + result + " Number of pages je: " + numberOfPages);
+//        for(int i = 0; i < numberOfPages;i++) {
+//            System.out.println("Vytvaram button num: " + i);
+//            try {
+//                FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(ResourceHelper.getPageButtonResource()));
+//                Button pageButton = fxmlLoader.load();
+//                pageButton.setText(i + 1 + "");
+//                buttonBox.setHgrow(pageButton,javafx.scene.layout.Priority.ALWAYS);
+//                buttonBox.getChildren().add(pageButton);
+//                int id = i;
+//                pageButton.setOnAction(event -> {
+//                    messagePageManager.switchPage(id);
+//                });
+//            } catch (Exception e) {
+//                throw new RuntimeException(e);
+//            }
+//        }
+//        messagePageManager.switchPage(0);
+//    }
+
+    private void switchPage(int i) {
+
     }
 
     @Override
@@ -246,4 +296,8 @@ public class HistorySMSMessagesController implements DeletableMessagesController
     }
 
 
+    @Override
+    public String getMessageText(BlockController controller) {
+        return messages.get(controller).getContent();
+    }
 }

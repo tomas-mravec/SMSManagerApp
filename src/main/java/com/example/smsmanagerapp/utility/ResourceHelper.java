@@ -26,4 +26,5 @@ public class ResourceHelper {
     public static String getReceiverBlockResource() { return "/com/example/smsmanagerapp/receiver-block.fxml";}
 
     public static String getMessageOutBlock() {return "/com/example/smsmanagerapp/message-out-block.fxml";}
+    public static String getPageButtonResource() {return "/com/example/smsmanagerapp/page-button.fxml";}
 }

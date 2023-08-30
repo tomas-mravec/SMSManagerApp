@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import org.kordamp.ikonli.javafx.FontIcon?>
+
+<AnchorPane fx:id="rootPane" onMouseEntered="#openIcons" onMouseExited="#closeIcons" prefHeight="176.0" prefWidth="1111.0" style="-fx-background-color: white;" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.smsmanagerapp.gui.controller.message.MessageBlockController">
+    <children>
+        <CheckBox fx:id="seenCheckBox" layoutX="71.0" layoutY="16.0" mnemonicParsing="false" prefHeight="17.0" prefWidth="16.0" />
+        <Label fx:id="contactLabel" layoutX="115.0" layoutY="14.0" prefHeight="17.0" prefWidth="137.0" text="0905518726" />
+        <Label fx:id="timeLabel" layoutX="268.0" layoutY="16.0" prefHeight="17.0" prefWidth="96.0" text="28.6.2023" />
+        <Label fx:id="messageLabel" layoutX="402.0" layoutY="14.0" prefHeight="17.0" prefWidth="364.0" text="fdfsdafdsdfsdfasdfsdasdffdsafasdsfdasfdsfdfsdsfdasfdasfdaasfdasfdsfdafdafdasfdasdf" />
+        <CheckBox fx:id="deleteCheckBox" layoutX="1081.0" layoutY="16.0" mnemonicParsing="false" prefHeight="16.0" prefWidth="16.0" />
+        <Button fx:id="seenButton" layoutX="27.0" layoutY="12.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="15.0" style="-fx-background-color: white;" textFill="WHITE">
+            <graphic>
+                <FontIcon fx:id="seenIcon" iconColor="#ff7103" iconLiteral="far-eye" iconSize="17" text="" wrappingWidth="19.0" />
+            </graphic>
+        </Button>
+        <Button fx:id="deleteMessagesButton" layoutX="1037.0" layoutY="12.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="9.0" style="-fx-background-color: white;">
+            <graphic>
+                <FontIcon fx:id="deleteIcon" iconColor="#ff7103" iconLiteral="far-trash-alt" iconSize="17" text="" wrappingWidth="15.875" />
+            </graphic></Button>
+      <TextArea layoutX="70.0" layoutY="56.0" prefHeight="110.0" prefWidth="984.0" />
+    </children>
+</AnchorPane>

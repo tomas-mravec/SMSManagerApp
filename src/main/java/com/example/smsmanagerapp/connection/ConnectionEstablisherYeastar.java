@@ -43,7 +43,7 @@ public class ConnectionEstablisherYeastar implements ConnectionEstablisher {
             in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
             } catch (IOException e) {
-            throw new RuntimeException(e);
+                System.out.println("Connection failed");
         }
     }
 

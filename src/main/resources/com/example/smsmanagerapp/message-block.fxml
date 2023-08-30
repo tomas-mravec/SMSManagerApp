@@ -6,7 +6,7 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import org.kordamp.ikonli.javafx.FontIcon?>
 
-<AnchorPane fx:id="rootPane" onMouseEntered="#openIcons" onMouseExited="#closeIcons" prefHeight="49.0" prefWidth="1111.0" style="-fx-background-color: white;" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.smsmanagerapp.gui.controller.message.MessageBlockController">
+<AnchorPane fx:id="rootPane" onMouseClicked="#unbox" onMouseEntered="#openIcons" onMouseExited="#closeIcons" prefHeight="49.0" prefWidth="1111.0" style="-fx-background-color: white;" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.smsmanagerapp.gui.controller.message.MessageBlockController">
 <children>
     <CheckBox fx:id="seenCheckBox" layoutX="71.0" layoutY="16.0" mnemonicParsing="false" prefHeight="17.0" prefWidth="16.0" />
     <Label fx:id="contactLabel" layoutX="115.0" layoutY="14.0" prefHeight="17.0" prefWidth="137.0" />

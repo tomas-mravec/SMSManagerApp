@@ -1,18 +1,14 @@
 package com.example.smsmanagerapp.gui.controller.message;
 
-import com.example.smsmanagerapp.gui.controller.interfaces.BlockController;
-import com.example.smsmanagerapp.gui.controller.interfaces.DeletableMessagesController;
-import com.example.smsmanagerapp.gui.controller.interfaces.GUIControllerUpdateable;
-import com.example.smsmanagerapp.gui.controller.interfaces.MarkableAsSeenMessagesController;
+import com.example.smsmanagerapp.gui.controller.interfaces.*;
+import com.example.smsmanagerapp.gui.updater.manager.DeleteMessagesManager;
+import com.example.smsmanagerapp.gui.updater.manager.SetMessagesAsSeenManager;
 import com.example.smsmanagerapp.utility.ResourceHelper;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
-import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.Separator;
+import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
 
 import java.io.IOException;
@@ -45,9 +41,21 @@ public class MessageBlockController implements Initializable, BlockController {
     @FXML
     private Button deleteMessagesButton;
 
-    private DeletableMessagesController controller;
+    //private DeletableMessagesController controller;
+    private SetMessagesAsSeenManager setMessagesAsSeenManager;
+    private DeleteMessagesManager deleteMessagesManager;
+
     private boolean markableAsSeen;
     private Separator separator;
+    private boolean unboxed;
+    private boolean firstTimeUnboxed;
+
+    private TextArea fullMessageArea;
+
+    public MessageBlockController() {
+        unboxed = false;
+        firstTimeUnboxed = true;
+    }
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -62,23 +70,20 @@ public class MessageBlockController implements Initializable, BlockController {
     private void setUpCheckBoxes() {
 
         deleteMessagesButton.setOnAction(event -> {
-            controller.markToDelete(this, false);
+            deleteMessagesManager.markToDelete(this, false);
         });
 
         deleteCheckBox.selectedProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue) {
                 System.out.println("Marking to delete");
-                controller.markToDelete(this, true);
+                deleteMessagesManager.markToDelete(this, true);
             } else {
                 System.out.println("Unmarking to delete");
-                controller.unMarkToDelete(this);
+                deleteMessagesManager.unMarkToDelete(this);
             }
         });
     }
 
-    public void setDeletableMessageController(DeletableMessagesController controller) {
-        this.controller = controller;
-    }
     public Parent getRoot() {
         return rootPane;
     }
@@ -99,10 +104,35 @@ public class MessageBlockController implements Initializable, BlockController {
 
     @Override
     public void selectAsSeen() {
-        if (markableAsSeen)
+        if (markableAsSeen) {
             seenCheckBox.setSelected(true);
             seenButton.setVisible(true);
             seenCheckBox.setVisible(true);
+        }
+    }
+
+    public void unbox() {
+      if (firstTimeUnboxed) {
+         fullMessageArea = new TextArea();
+         fullMessageArea.setWrapText(true);
+         fullMessageArea.setLayoutX(90);
+         fullMessageArea.setLayoutY(56);
+         fullMessageArea.setPrefHeight(110);
+         fullMessageArea.setPrefWidth(1150);
+//         String messageText = ((UnboxableMessagesController) controller).getMessageText(this);
+//         fullMessageArea.setText(messageText);
+          fullMessageArea.setText(messageLabel.getText());
+         rootPane.getChildren().add(fullMessageArea);
+         firstTimeUnboxed = false;
+         unboxed = true;
+      }
+      else if (!unboxed) {
+         rootPane.getChildren().add(fullMessageArea);
+         unboxed = true;
+     } else {
+          rootPane.getChildren().remove(fullMessageArea);
+          unboxed = false;
+     }
     }
 
     @Override
@@ -157,17 +187,25 @@ public class MessageBlockController implements Initializable, BlockController {
         this.markableAsSeen = markableAsSeen;
         if (markableAsSeen) {
             seenButton.setOnAction(event -> {
-                ((MarkableAsSeenMessagesController)controller).markAsSeen(this, false);
+                setMessagesAsSeenManager.markAsSeen(this, false);
             });
-
             seenCheckBox.selectedProperty().addListener((observable, oldValue, newValue) -> {
                 if (newValue && markableAsSeen) {
-                    ((MarkableAsSeenMessagesController) controller).markAsSeen(this, true);
+                    setMessagesAsSeenManager.markAsSeen(this, true);
                 } else if(!newValue && markableAsSeen) {
-                    ((MarkableAsSeenMessagesController) controller).unMarkAsSeen(this);
+                    setMessagesAsSeenManager.unMarkAsSeen(this);
                 }
             });
-
         }
     }
+
+    public void setSetMessagesAsSeenManager(SetMessagesAsSeenManager setMessagesAsSeenManager) {
+        this.setMessagesAsSeenManager = setMessagesAsSeenManager;
+        setMarkableAsSeen(true);
+    }
+    public void setDeleteMessagesManager(DeleteMessagesManager deleteMessagesManager) {
+        this.deleteMessagesManager = deleteMessagesManager;
+    }
+
+
 }

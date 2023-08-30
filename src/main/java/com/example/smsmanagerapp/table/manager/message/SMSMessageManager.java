@@ -1,5 +1,6 @@
 package com.example.smsmanagerapp.table.manager.message;
 
+import com.example.smsmanagerapp.gui.updater.MessagePageManager;
 import com.example.smsmanagerapp.table.manager.contact.ContactManager;
 import com.example.smsmanagerapp.data.contact.Contact;
 import com.example.smsmanagerapp.table.manager.message.interfaces.MessageManager;
@@ -21,10 +22,12 @@ public class SMSMessageManager implements MessageManager, IMessageListenerObserv
     private Connection connection;
     private Statement statement;
     private ContactManager contactManager;
+    private List<MessagePageManager> pageManagers;
 
     public SMSMessageManager(Connection connection, ContactManager contactManager) {
         this.connection = connection;
         this.contactManager = contactManager;
+        this.pageManagers = new ArrayList<>();
         messageRecencyType = MessageRecencyType.NEW_MESSAGE;
         //smsMessages = new ArrayList<>();
         try {
@@ -195,12 +198,15 @@ public class SMSMessageManager implements MessageManager, IMessageListenerObserv
                     preparedStatement = connection.prepareStatement(sql);
                     preparedStatement.setInt(1,id);
                     int resultSet = preparedStatement.executeUpdate();
+                    notifyPageManagers();
                 } catch (SQLException e) {
                     throw new RuntimeException(e);
                 }
             }
         }
     }
+
+
 
     @Override
     public List<? extends Data> getFilteredMessages(String filter, LocalDate dateFilterFrom, LocalDate dateFilterTo, boolean seen) {
@@ -308,6 +314,25 @@ public class SMSMessageManager implements MessageManager, IMessageListenerObserv
     }
 
     @Override
+    public int getNumberOfMessages(boolean seen) {
+        String sql = "SELECT COUNT(*) FROM message WHERE seen = ?";
+        try {
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setBoolean(1, seen);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if (resultSet.next()) {
+                System.out.println("Number of rows in message: " + resultSet.getInt(1));
+                return resultSet.getInt(1);
+            }
+            else {
+                return 0;
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
     public void deleteMessagesById(List<Integer> identifiers) {
         if (identifiers != null) {
             for (Integer id : identifiers) {
@@ -322,5 +347,63 @@ public class SMSMessageManager implements MessageManager, IMessageListenerObserv
                 }
             }
         }
+    }
+
+    private void notifyPageManagers() {
+        pageManagers.forEach(MessagePageManager::update);
+    }
+
+    @Override
+    public void addPageManagerToNotifyWhenMessageChangesToSeen(MessagePageManager pageManager) {
+        pageManagers.add(pageManager);
+    }
+
+    public Iterable<? extends Data> getPageMessages(int offset, int limit, boolean seen) {
+        List<SMSMessage> messages = new ArrayList<>();
+//        SMSMessage message = new SMSMessage();
+//        message.setId(1);
+//        message.setSender("0903750825");
+//        Contact contact = new Contact("0903750825");
+//        message.setContact(contact);
+//        message.setContactId(1);
+//        message.setRecvTime(LocalDateTime.now());
+//        message.setSeen(false);
+//        message.setContent("KWABITINI");
+//        messages.add(message);
+//        messages.add(message);
+//        messages.add(message);
+//        messages.add(message);
+//        messages.add(message);
+//        messages.add(message);
+
+        System.out.println("Idem najst page messages");
+        String query = "SELECT * FROM message m LEFT JOIN contact c ON c.number = m.sender " +
+                "WHERE m.seen = ? ORDER BY received_time DESC LIMIT ? OFFSET ?";
+        PreparedStatement preparedStatement = null;
+        try {
+            preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setBoolean(1, seen);
+            preparedStatement.setInt(2,limit);
+            preparedStatement.setInt(3,offset);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            while (resultSet.next()) {
+                System.out.println("Som v rezultSete, content message je: " + resultSet.getString("m.content"));
+                SMSMessage smsMessage = new SMSMessage();
+                smsMessage.setId(resultSet.getInt("m.id"));
+                smsMessage.setContent(resultSet.getString("m.content"));
+                smsMessage.setRecvTime(resultSet.getTimestamp("m.received_time").toLocalDateTime());
+                smsMessage.setSeen(resultSet.getBoolean("m.seen"));
+
+                Contact contact = new Contact(resultSet.getString("c.number"));
+                contact.setName(resultSet.getString("c.name"));
+                smsMessage.setContact(contact);
+                smsMessage.setSender(contact.getNumber());
+                messages.add(smsMessage);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        return messages;
     }
 }
