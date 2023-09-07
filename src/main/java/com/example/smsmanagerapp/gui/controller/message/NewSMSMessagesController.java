@@ -1,27 +1,21 @@
 package com.example.smsmanagerapp.gui.controller.message;
 
 import com.example.smsmanagerapp.gui.controller.interfaces.*;
-import com.example.smsmanagerapp.gui.controller.menu.MenuControllerImpl;
 import com.example.smsmanagerapp.gui.updater.GUIMessageUpdater;
-import com.example.smsmanagerapp.gui.updater.MessagePageManager;
+import com.example.smsmanagerapp.page.manager.MessagePagesManager;
 import com.example.smsmanagerapp.table.manager.message.interfaces.MessageManager;
 import com.example.smsmanagerapp.table.manager.type.MessageRecencyType;
 import com.example.smsmanagerapp.data.Data;
 import com.example.smsmanagerapp.data.SMSMessage;
 import com.example.smsmanagerapp.manager.MenuManager;
-import com.example.smsmanagerapp.utility.ResourceHelper;
-import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
-import java.io.IOException;
 import java.net.URL;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -68,7 +62,7 @@ public class NewSMSMessagesController implements GUIControllerUpdateable, Deleta
     private HashMap<BlockController, SMSMessage> messagesToDelete;
     private HashMap<BlockController, SMSMessage> messagesToHistory;
     private String senderFilter;
-    private MessagePageManager messagePageManager;
+    private MessagePagesManager messagePagesManager;
     private final int MAX_MESSAGES_ON_PAGE = 4;
     private GUIMessageUpdater guiMessageUpdater;
     @FXML
@@ -151,14 +145,14 @@ public class NewSMSMessagesController implements GUIControllerUpdateable, Deleta
 //        for (BlockController blockController : messages.keySet()) {
 //            blockController.unSelectAsSeen();
 //        }
-        messagePageManager.unSelectAllMessagesAsSeen();
+        messagePagesManager.unSelectAllMessagesAsSeen();
     }
 
     private void selectAllAsSeenMessageBlocks() {
 //        for (BlockController blockController : messages.keySet()) {
 //            blockController.selectAsSeen();
 //        }
-        messagePageManager.selectAllMessagesAsSeen();
+        messagePagesManager.selectAllMessagesAsSeen();
     }
     public List<Integer> getIdentifiersFromMessages(Collection<SMSMessage> smsMessages) {
         return smsMessages.stream()
@@ -172,14 +166,14 @@ public class NewSMSMessagesController implements GUIControllerUpdateable, Deleta
 //        }
 //        messages.remove(messagesToHistory.keySet());
 //        messagesToHistory.clear();
-        messagePageManager.markMessagesAsSeen();
+        messagePagesManager.markMessagesAsSeen();
     }
 
     private void unSelectAllMessageBlocks() {
 //        for (BlockController blockController : messages.keySet()) {
 //            blockController.unSelect();
 //        }
-        messagePageManager.unSelectAllMessagesToDelete();
+        messagePagesManager.unSelectAllMessagesToDelete();
     }
 
     private void selectAllMessageBlocks() {
@@ -187,7 +181,7 @@ public class NewSMSMessagesController implements GUIControllerUpdateable, Deleta
 //            blockController.select();
 //        }
 
-        messagePageManager.selectAllMessagesToDelete();
+        messagePagesManager.selectAllMessagesToDelete();
     }
 
     public void setMenu() {
@@ -219,7 +213,7 @@ public class NewSMSMessagesController implements GUIControllerUpdateable, Deleta
 //        }
 //        messages.remove(messagesToDelete.keySet());
 //        messagesToDelete.clear();
-        messagePageManager.deleteMarkedMessages();
+        messagePagesManager.deleteMarkedMessages();
     }
 
 
@@ -259,7 +253,7 @@ public class NewSMSMessagesController implements GUIControllerUpdateable, Deleta
 //            System.out.println("Message added xdd");
 //            messages.put(messageBlockController, (SMSMessage) data);
 //        }
-        messagePageManager.update();
+        messagePagesManager.update();
     }
 
     @Override
@@ -277,7 +271,7 @@ public class NewSMSMessagesController implements GUIControllerUpdateable, Deleta
     public void addMessageManager(MessageManager messageManager) {
         if (!messageManagers.contains(messageManager)) {
             messageManagers.add(messageManager);
-            messagePageManager = new MessagePageManager(pagePane, messageManager, true, MAX_MESSAGES_ON_PAGE, buttonBox);
+            messagePagesManager = new MessagePagesManager(pagePane, messageManager, true, MAX_MESSAGES_ON_PAGE, buttonBox);
             //setUpPages(messageManagers.get(0).getNumberOfMessages(false));
         }
 

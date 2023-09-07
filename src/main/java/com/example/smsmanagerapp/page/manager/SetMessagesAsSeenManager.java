@@ -1,9 +1,9 @@
-package com.example.smsmanagerapp.gui.updater.manager;
+package com.example.smsmanagerapp.page.manager;
 
 import com.example.smsmanagerapp.data.SMSMessage;
 import com.example.smsmanagerapp.gui.controller.interfaces.BlockController;
 import com.example.smsmanagerapp.gui.controller.message.MessageBlockController;
-import com.example.smsmanagerapp.gui.updater.MessagePageManager;
+import com.example.smsmanagerapp.page.MessagePages;
 import com.example.smsmanagerapp.table.manager.message.interfaces.MessageManager;
 import javafx.scene.layout.VBox;
 
@@ -17,7 +17,7 @@ public class SetMessagesAsSeenManager {
     private HashMap<MessageBlockController, SMSMessage> messages;
     private VBox page;
     private MessageManager messageManager;
-    private MessagePageManager pageManager;
+    private MessagePages pageManager;
 
     public SetMessagesAsSeenManager(MessageManager messageManager) {
         this.messageManager = messageManager;
@@ -65,15 +65,15 @@ public class SetMessagesAsSeenManager {
 
     public void markAllAsSeen() {
         messageManager.setMessagesAsSeen(getIdentifiersFromMessages(messagesToHistory.values()));
-        for (BlockController blockController : messagesToHistory.keySet()) {
-            page.getChildren().remove(blockController.getRoot());
-        }
-        messages.remove(messagesToHistory.keySet());
-        messagesToHistory.clear();
+//        for (BlockController blockController : messagesToHistory.keySet()) {
+//            page.getChildren().remove(blockController.getRoot());
+//        }
+//        messages.remove(messagesToHistory.keySet());
+//        messagesToHistory.clear();
         pageManager.update();
     }
 
-    public void setPageManager(MessagePageManager pageManager) {
+    public void setPageManager(MessagePages pageManager) {
         this.pageManager = pageManager;
     }
 }

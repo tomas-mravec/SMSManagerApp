@@ -1,6 +1,6 @@
 package com.example.smsmanagerapp.table.manager.message;
 
-import com.example.smsmanagerapp.gui.updater.MessagePageManager;
+import com.example.smsmanagerapp.page.MessagePages;
 import com.example.smsmanagerapp.table.manager.contact.ContactManager;
 import com.example.smsmanagerapp.data.contact.Contact;
 import com.example.smsmanagerapp.table.manager.message.interfaces.MessageManager;
@@ -22,7 +22,7 @@ public class SMSMessageManager implements MessageManager, IMessageListenerObserv
     private Connection connection;
     private Statement statement;
     private ContactManager contactManager;
-    private List<MessagePageManager> pageManagers;
+    private List<MessagePages> pageManagers;
 
     public SMSMessageManager(Connection connection, ContactManager contactManager) {
         this.connection = connection;
@@ -350,11 +350,11 @@ public class SMSMessageManager implements MessageManager, IMessageListenerObserv
     }
 
     private void notifyPageManagers() {
-        pageManagers.forEach(MessagePageManager::update);
+        pageManagers.forEach(MessagePages::update);
     }
 
     @Override
-    public void addPageManagerToNotifyWhenMessageChangesToSeen(MessagePageManager pageManager) {
+    public void addPageManagerToNotifyWhenMessageChangesToSeen(MessagePages pageManager) {
         pageManagers.add(pageManager);
     }
 

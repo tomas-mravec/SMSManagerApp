@@ -5,27 +5,21 @@ import com.example.smsmanagerapp.gui.controller.interfaces.DeletableMessagesCont
 import com.example.smsmanagerapp.gui.controller.interfaces.UnboxableMessagesController;
 import com.example.smsmanagerapp.gui.controller.menu.MenuControllerImpl;
 import com.example.smsmanagerapp.gui.controller.interfaces.GUIControllerUpdateable;
-import com.example.smsmanagerapp.gui.updater.GUIMessageUpdater;
-import com.example.smsmanagerapp.gui.updater.MessagePageManager;
+import com.example.smsmanagerapp.page.manager.MessagePagesManager;
 import com.example.smsmanagerapp.table.manager.message.interfaces.MessageManager;
 import com.example.smsmanagerapp.table.manager.type.MessageRecencyType;
 import com.example.smsmanagerapp.data.Data;
 import com.example.smsmanagerapp.data.SMSMessage;
 import com.example.smsmanagerapp.manager.MenuManager;
-import com.example.smsmanagerapp.utility.ResourceHelper;
-import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
 
-import java.io.IOException;
 import java.net.URL;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -76,9 +70,9 @@ public class HistorySMSMessagesController implements DeletableMessagesController
 
     private HashMap<BlockController, SMSMessage> messages;
     private HashMap<BlockController, SMSMessage> messagesToDelete;
-    private final int MAX_MESSAGES_ON_PAGE = 10;
+    private final int MAX_MESSAGES_ON_PAGE = 5;
 
-    private MessagePageManager messagePageManager;
+    private MessagePagesManager messagePagesManager;
 
     public HistorySMSMessagesController() {
         messages = new HashMap<>();
@@ -118,11 +112,11 @@ public class HistorySMSMessagesController implements DeletableMessagesController
     }
 
     private void unSelectAllMessageBlocks() {
-        messagePageManager.unSelectAllMessagesToDelete();
+        messagePagesManager.unSelectAllMessagesToDelete();
     }
 
     private void selectAllMessageBlocks() {
-        messagePageManager.selectAllMessagesToDelete();
+        messagePagesManager.selectAllMessagesToDelete();
     }
 
     public void setMenu() {
@@ -152,7 +146,7 @@ public class HistorySMSMessagesController implements DeletableMessagesController
 //        }
 //        messages.remove(messagesToDelete.keySet());
 //        messagesToDelete.clear();
-        messagePageManager.deleteMarkedMessages();
+        messagePagesManager.deleteMarkedMessages();
     }
 
     @Override
@@ -176,10 +170,13 @@ public class HistorySMSMessagesController implements DeletableMessagesController
     public void dateSelected(ActionEvent event) {
         dateFilterFrom = datePickerFrom.getValue();
         dateFilterTo = datePickerTo.getValue();
-        if (dateFilterFrom != null && dateFilterTo != null) {
-            eraseMessagesOnGUI();
-            filterMesssages();
+        //if (dateFilterFrom != null && dateFilterTo != null) {
+        if (senderFilter.isEmpty() && dateFilterFrom == null && dateFilterTo == null)  {
+            messagePagesManager.switchToMainPages();
+        } else {
+            messagePagesManager.filterMessages(senderFilter, dateFilterFrom, dateFilterTo);
         }
+       // }
     }
 
     private void filterMesssages() {
@@ -193,9 +190,12 @@ public class HistorySMSMessagesController implements DeletableMessagesController
     private void searchHistoryBySender(String newValue) {
         System.out.println("in search history by sender New value is: " + newValue);
         senderFilter = newValue;
-        eraseMessagesOnGUI();
-        System.out.println("I erased messages");
-        filterMesssages();
+        if (senderFilter.isEmpty() && dateFilterFrom == null && dateFilterTo == null)  {
+            messagePagesManager.switchToMainPages();
+        } else {
+            messagePagesManager.filterMessages(senderFilter, dateFilterFrom, dateFilterTo);
+        }
+
     }
 
     private void eraseMessagesOnGUI() {
@@ -205,8 +205,12 @@ public class HistorySMSMessagesController implements DeletableMessagesController
     @Override
     public void addMessageManager(MessageManager messageManager) {
         this.messageManagers.add(messageManager);
-        messagePageManager = new MessagePageManager(pagePane, messageManager, false, MAX_MESSAGES_ON_PAGE, buttonBox);
-        messageManager.addPageManagerToNotifyWhenMessageChangesToSeen(messagePageManager);
+        messagePagesManager = new MessagePagesManager(pagePane, messageManager, false, MAX_MESSAGES_ON_PAGE, buttonBox);
+
+
+       // messageManager.addPageManagerToNotifyWhenMessageChangesToSeen(messagePageManager);
+
+
         //setUpPages(messageManager.getNumberOfMessages(true));
         //setUpListButtons(messageManager.getNumberOfMessages(true));
     }
@@ -280,8 +284,11 @@ public class HistorySMSMessagesController implements DeletableMessagesController
         datePickerTo.setValue(null);
         dateFilterFrom = null;
         dateFilterTo = null;
-        eraseMessagesOnGUI();
-        filterMesssages();
+        if (senderFilter.isEmpty())  {
+            messagePagesManager.switchToMainPages();
+        } else {
+            messagePagesManager.filterMessages(senderFilter, dateFilterFrom, dateFilterTo);
+        }
     }
 
     @Override

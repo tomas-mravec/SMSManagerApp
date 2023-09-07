@@ -1,17 +1,14 @@
 package com.example.smsmanagerapp.gui.controller.message;
 
 import com.example.smsmanagerapp.gui.controller.interfaces.*;
-import com.example.smsmanagerapp.gui.updater.manager.DeleteMessagesManager;
-import com.example.smsmanagerapp.gui.updater.manager.SetMessagesAsSeenManager;
-import com.example.smsmanagerapp.utility.ResourceHelper;
+import com.example.smsmanagerapp.page.manager.DeleteMessagesManager;
+import com.example.smsmanagerapp.page.manager.SetMessagesAsSeenManager;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
 
-import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 

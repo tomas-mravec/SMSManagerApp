@@ -1,21 +1,9 @@
 package com.example.smsmanagerapp.gui.updater;
 
-import com.example.smsmanagerapp.data.Data;
 import com.example.smsmanagerapp.data.SMSMessage;
 import com.example.smsmanagerapp.gui.controller.interfaces.BlockController;
-import com.example.smsmanagerapp.gui.controller.interfaces.DeletableMessagesController;
 import com.example.smsmanagerapp.gui.controller.interfaces.GUIControllerUpdateable;
-import com.example.smsmanagerapp.gui.controller.message.MessageBlockController;
-import com.example.smsmanagerapp.gui.updater.manager.DeleteMessagesManager;
-import com.example.smsmanagerapp.gui.updater.manager.SetMessagesAsSeenManager;
-import com.example.smsmanagerapp.utility.ResourceHelper;
-import javafx.application.Platform;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.control.Separator;
-import javafx.scene.layout.VBox;
 
-import java.io.IOException;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 
