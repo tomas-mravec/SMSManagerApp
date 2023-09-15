@@ -24,11 +24,11 @@ public interface MessageManager {
 
     void remove(Data data);
 
-    int getNumberOfMessages(boolean seen);
+    int getNumberOfMessages(boolean seen, String textFilter, LocalDate dateFilterFrom, LocalDate dateFilterTo);
 
     void deleteMessagesById(List<Integer> integers);
 
     void addPageManagerToNotifyWhenMessageChangesToSeen(MessagePages pageManager);
 
-    Iterable<? extends Data> getPageMessages(int i, int page_limit, boolean seen);
+    Iterable<? extends Data> getPageMessages(int i, int page_limit, boolean seen, String newValue, LocalDate dateFilterFrom, LocalDate dateFilterTo);
 }

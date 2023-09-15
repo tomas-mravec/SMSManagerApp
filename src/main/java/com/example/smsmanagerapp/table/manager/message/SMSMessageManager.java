@@ -52,6 +52,23 @@ public class SMSMessageManager implements MessageManager, IMessageListenerObserv
             contactManager.createNewContact(smsMessage.getContact());
     }
 
+
+    //        SMSMessage message = new SMSMessage();
+//        message.setId(1);
+//        message.setSender("0903750825");
+//        Contact contact = new Contact("0903750825");
+//        message.setContact(contact);
+//        message.setContactId(1);
+//        message.setRecvTime(LocalDateTime.now());
+//        message.setSeen(false);
+//        message.setContent("KWABITINI");
+//        messages.add(message);
+//        messages.add(message);
+//        messages.add(message);
+//        messages.add(message);
+//        messages.add(message);
+//        messages.add(message);
+
     private void saveNewMessage(Data data) {
         //smsMessages.add((SMSMessage) data);
         SMSMessage smsMessage = (SMSMessage) data;
@@ -274,6 +291,10 @@ public class SMSMessageManager implements MessageManager, IMessageListenerObserv
         if (date != null) {
             try {
                 String sql = "SELECT * FROM message WHERE DATE(received_time) = ? AND seen = ?";
+
+
+
+
                 PreparedStatement statement = connection.prepareStatement(sql);
                 statement.setDate(1, Date.valueOf(date));
                 statement.setBoolean(2, true);
@@ -314,22 +335,52 @@ public class SMSMessageManager implements MessageManager, IMessageListenerObserv
     }
 
     @Override
-    public int getNumberOfMessages(boolean seen) {
-        String sql = "SELECT COUNT(*) FROM message WHERE seen = ?";
+    public int getNumberOfMessages(boolean seen, String textFilter, LocalDate dateFilterFrom, LocalDate dateFilterTo) {
+        String query = "SELECT COUNT(*) FROM message m LEFT JOIN contact c ON c.number = m.sender WHERE m.seen = ?";
+
+        boolean isStringFiltered = false;
+        boolean isDateFiltered = false;
+
+        String filterQuery = "(m.sender LIKE CONCAT('%', ?, '%') OR c.name LIKE CONCAT('%', ?, '%'))";
+
+        String dateFilterQuery = "DATE(m.received_time) BETWEEN ? AND ?";
+
         try {
-            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            if (textFilter != null && !textFilter.isEmpty()) {
+                query += " AND " + filterQuery;
+                isStringFiltered = true;
+            }
+            if (dateFilterFrom != null && dateFilterTo != null) {
+                query += " AND " + dateFilterQuery;
+                isDateFiltered = true;
+            }
+            System.out.println("Query is: " + query);
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
             preparedStatement.setBoolean(1, seen);
-            ResultSet resultSet = preparedStatement.executeQuery();
-            if (resultSet.next()) {
-                System.out.println("Number of rows in message: " + resultSet.getInt(1));
-                return resultSet.getInt(1);
+            if (isStringFiltered) {
+                preparedStatement.setString(2, textFilter);
+                preparedStatement.setString(3, textFilter);
             }
-            else {
-                return 0;
+            if (isDateFiltered) {
+                if (isStringFiltered) {
+                    preparedStatement.setDate(4, Date.valueOf(dateFilterFrom));
+                    preparedStatement.setDate(5, Date.valueOf(dateFilterTo));
+                } else {
+                    preparedStatement.setDate(2, Date.valueOf(dateFilterFrom));
+                    preparedStatement.setDate(3, Date.valueOf(dateFilterTo));
+                }
             }
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
+
+                ResultSet resultSet = preparedStatement.executeQuery();
+                if (resultSet.next()) {
+                    System.out.println("Number of rows in message: " + resultSet.getInt(1));
+                    return resultSet.getInt(1);
+                } else {
+                    return 0;
+                }
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
     }
 
     @Override
@@ -358,33 +409,64 @@ public class SMSMessageManager implements MessageManager, IMessageListenerObserv
         pageManagers.add(pageManager);
     }
 
-    public Iterable<? extends Data> getPageMessages(int offset, int limit, boolean seen) {
+    public Iterable<? extends Data> getPageMessages(int offset, int limit, boolean seen, String textFilter, LocalDate dateFilterFrom, LocalDate dateFilterTo) {
         List<SMSMessage> messages = new ArrayList<>();
-//        SMSMessage message = new SMSMessage();
-//        message.setId(1);
-//        message.setSender("0903750825");
-//        Contact contact = new Contact("0903750825");
-//        message.setContact(contact);
-//        message.setContactId(1);
-//        message.setRecvTime(LocalDateTime.now());
-//        message.setSeen(false);
-//        message.setContent("KWABITINI");
-//        messages.add(message);
-//        messages.add(message);
-//        messages.add(message);
-//        messages.add(message);
-//        messages.add(message);
-//        messages.add(message);
 
-        System.out.println("Idem najst page messages");
         String query = "SELECT * FROM message m LEFT JOIN contact c ON c.number = m.sender " +
-                "WHERE m.seen = ? ORDER BY received_time DESC LIMIT ? OFFSET ?";
-        PreparedStatement preparedStatement = null;
+                "WHERE m.seen = ?";
+
+        String endOfQuery = "ORDER BY received_time DESC LIMIT ? OFFSET ?";
+
+        boolean isStringFiltered = false;
+        boolean isDateFiltered = false;
+
+        String filterQuery = "(m.sender LIKE CONCAT('%', ?, '%') OR c.name LIKE CONCAT('%', ?, '%'))";
+
+        String dateFilterQuery = "DATE(m.received_time) BETWEEN ? AND ?";
+
         try {
-            preparedStatement = connection.prepareStatement(query);
+            if (textFilter != null && !textFilter.isEmpty()) {
+                query += " AND " + filterQuery;
+                isStringFiltered = true;
+            }
+            if (dateFilterFrom != null && dateFilterTo != null) {
+                query += " AND " + dateFilterQuery;
+                isDateFiltered = true;
+            }
+            query += " " + endOfQuery;
+            System.out.println("Query is: " + query);
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
             preparedStatement.setBoolean(1, seen);
-            preparedStatement.setInt(2,limit);
-            preparedStatement.setInt(3,offset);
+            if (isStringFiltered) {
+                preparedStatement.setString(2, textFilter);
+                preparedStatement.setString(3, textFilter);
+            }
+            if (isDateFiltered) {
+                if (isStringFiltered) {
+                    preparedStatement.setDate(4, Date.valueOf(dateFilterFrom));
+                    preparedStatement.setDate(5, Date.valueOf(dateFilterTo));
+                    //preparedStatement.setInt(6,limit);
+                    //preparedStatement.setInt(7,offset);
+                } else {
+                    preparedStatement.setDate(2, Date.valueOf(dateFilterFrom));
+                    preparedStatement.setDate(3, Date.valueOf(dateFilterTo));
+//                    preparedStatement.setInt(4,limit);
+//                    preparedStatement.setInt(5,offset);
+                }
+            }
+            if (isDateFiltered && isStringFiltered) {
+                preparedStatement.setInt(6,limit);
+                preparedStatement.setInt(7,offset);
+            }
+            else if (isDateFiltered || isStringFiltered) {
+                preparedStatement.setInt(4,limit);
+                preparedStatement.setInt(5,offset);
+            }
+            else {
+                preparedStatement.setInt(2,limit);
+                preparedStatement.setInt(3,offset);
+            }
+
             ResultSet resultSet = preparedStatement.executeQuery();
             while (resultSet.next()) {
                 System.out.println("Som v rezultSete, content message je: " + resultSet.getString("m.content"));
@@ -403,6 +485,31 @@ public class SMSMessageManager implements MessageManager, IMessageListenerObserv
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+
+//        PreparedStatement preparedStatement = null;
+//        try {
+//            preparedStatement = connection.prepareStatement(query);
+//            preparedStatement.setBoolean(1, seen);
+//            preparedStatement.setInt(2,limit);
+//            preparedStatement.setInt(3,offset);
+//            ResultSet resultSet = preparedStatement.executeQuery();
+//            while (resultSet.next()) {
+//                System.out.println("Som v rezultSete, content message je: " + resultSet.getString("m.content"));
+//                SMSMessage smsMessage = new SMSMessage();
+//                smsMessage.setId(resultSet.getInt("m.id"));
+//                smsMessage.setContent(resultSet.getString("m.content"));
+//                smsMessage.setRecvTime(resultSet.getTimestamp("m.received_time").toLocalDateTime());
+//                smsMessage.setSeen(resultSet.getBoolean("m.seen"));
+//
+//                Contact contact = new Contact(resultSet.getString("c.number"));
+//                contact.setName(resultSet.getString("c.name"));
+//                smsMessage.setContact(contact);
+//                smsMessage.setSender(contact.getNumber());
+//                messages.add(smsMessage);
+//            }
+//        } catch (SQLException e) {
+//            throw new RuntimeException(e);
+//        }
 
         return messages;
     }

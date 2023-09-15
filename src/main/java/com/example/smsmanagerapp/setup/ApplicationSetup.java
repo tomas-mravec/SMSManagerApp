@@ -108,7 +108,7 @@ public class ApplicationSetup {
 
         connectionEstablisher.logIn();
 
-        if (connectionEstablisher.getSocket().isPresent()) {
+       // if (connectionEstablisher.getSocket().isPresent()) {
 
             DatabaseConnection databaseConnection = new MySQLDatabaseConnection(
                     DatabaseLoginData.getUrl(),
@@ -122,11 +122,12 @@ public class ApplicationSetup {
             MessageOutImpl messageOutManager = new MessageOutImpl(connection);
             GroupContactManagerImpl groupContactManager = new GroupContactManagerImpl(connection);
 
-            MessageListener messageListener = MessageListenerFactory.create(TYPE,
-                    connectionEstablisher.getSocket().get(),
-                    connectionEstablisher.getOutputStream(),
-                    connectionEstablisher.getInputStream());
-            messageListener.addObserver(messageManager);
+//            MessageListener messageListener = MessageListenerFactory.create(TYPE,
+//                   // connectionEstablisher.getSocket().get(),
+//                    null,
+//                    connectionEstablisher.getOutputStream(),
+//                    connectionEstablisher.getInputStream());
+//            messageListener.addObserver(messageManager);
 
             MenuManager.getMenuController().setSceneControllerContainer(sceneControllerContainer);
 
@@ -146,7 +147,7 @@ public class ApplicationSetup {
             stage.show();
          //   newSMSMessagesController.testReturn();
            // newSMSMessagesController.loadMessages();
-            messageListener.listenForMessages();
+           // messageListener.listenForMessages();
 
 //            MessageListener messageListener = MessageListenerFactory.create(TYPE, connection.getSocket().get());
 //            MessageManagerObserver messageContainer = new NewSMSMessageManager();
@@ -161,9 +162,10 @@ public class ApplicationSetup {
 //            notifier.setCurrentScene(scene);
 //            notifier.setGuiController(guiController);
 //            messageListener.listenForMessages();
-        } else {
-            throw new RuntimeException();
-        }
+//        } else {
+//            System.out.printf("heh");
+//            throw new RuntimeException();
+//        }
     }
 
     private void createScenesControllers(MessageManager messageManager, ContactManager contactManager,

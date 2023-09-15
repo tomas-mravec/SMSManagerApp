@@ -117,16 +117,29 @@ public class NewSMSMessagesController implements GUIControllerUpdateable, Deleta
         datePickerTo.setValue(null);
         dateFilterFrom = null;
         dateFilterTo = null;
-        eraseMessagesOnGUI();
-        filterMesssages();
+//        if (senderFilter == null || senderFilter.isEmpty())  {
+//            messagePagesManager.mainPagesMessages();
+//        } else {
+//            messagePagesManager.filterMessages(senderFilter, dateFilterFrom, dateFilterTo);
+//        }
     }
 
     private void searchHistoryBySender(String newValue) {
         System.out.println("in search history by sender New value is: " + newValue);
+
+        if (!newValue.equals(senderFilter) && newValue != null && !newValue.isEmpty()) {
+            messagePagesManager.filterMessages(senderFilter, dateFilterFrom, dateFilterTo);
+        } else if (newValue.isEmpty() && (dateFilterTo == null || dateFilterFrom == null)) {
+            messagePagesManager.mainPagesMessages();
+        } else if (newValue.isEmpty() && dateFilterFrom != null && dateFilterTo != null) {
+            messagePagesManager.filterMessages(senderFilter, dateFilterFrom, dateFilterTo);
+        }
         senderFilter = newValue;
-        eraseMessagesOnGUI();
-        System.out.println("I erased messages");
-        filterMesssages();
+//        if ((newValue == null || senderFilter.isEmpty()) && (dateFilterFrom == null || dateFilterTo == null))  {
+//            messagePagesManager.mainPagesMessages();
+//        } else {
+//            messagePagesManager.filterMessages(senderFilter, dateFilterFrom, dateFilterTo);
+//        }
     }
 
     private void filterMesssages() {
@@ -199,12 +212,28 @@ public class NewSMSMessagesController implements GUIControllerUpdateable, Deleta
     }
 
     public void dateSelected(ActionEvent event) {
+//        dateFilterFrom = datePickerFrom.getValue();
+//        dateFilterTo = datePickerTo.getValue();
+//        if ((senderFilter == null || senderFilter.isEmpty()) && (dateFilterFrom == null && dateFilterTo == null))  {
+//            messagePagesManager.mainPagesMessages();
+//        } else if ((dateFilterTo != null && dateFilterFrom != null) || (senderFilter != null && !senderFilter.isEmpty())){
+//            messagePagesManager.filterMessages(senderFilter, dateFilterFrom, dateFilterTo);
+//        }
+        if ((dateFilterTo != datePickerTo.getValue() || dateFilterFrom != datePickerFrom.getValue()) &&
+                (datePickerFrom.getValue() != null && datePickerTo.getValue() != null)) {
+            messagePagesManager.filterMessages(senderFilter, datePickerFrom.getValue(), datePickerTo.getValue());
+        }
+        else if ((datePickerFrom.getValue() == null && datePickerTo.getValue() == null) && (dateFilterFrom != null || dateFilterTo != null) &&
+                    senderFilter != null && !senderFilter.isEmpty()) {
+            messagePagesManager.filterMessages(senderFilter, datePickerFrom.getValue(), datePickerTo.getValue());
+        } else if ((datePickerFrom.getValue() == null && datePickerTo.getValue() == null) && (dateFilterFrom != null || dateFilterTo != null) &&
+                senderFilter != null && !senderFilter.isEmpty()) {
+            messagePagesManager.mainPagesMessages();
+        }
+
         dateFilterFrom = datePickerFrom.getValue();
         dateFilterTo = datePickerTo.getValue();
-        if (dateFilterFrom != null && dateFilterTo != null) {
-            eraseMessagesOnGUI();
-            filterMesssages();
-        }
+
     }
     public void deleteMarkedMessages() {
 //        messageManagers.get(0).deleteMessagesById(getIdentifiersFromMessages(messagesToDelete.values()));

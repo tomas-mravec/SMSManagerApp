@@ -171,9 +171,9 @@ public class HistorySMSMessagesController implements DeletableMessagesController
         dateFilterFrom = datePickerFrom.getValue();
         dateFilterTo = datePickerTo.getValue();
         //if (dateFilterFrom != null && dateFilterTo != null) {
-        if (senderFilter.isEmpty() && dateFilterFrom == null && dateFilterTo == null)  {
-            messagePagesManager.switchToMainPages();
-        } else {
+        if ((senderFilter == null || senderFilter.isEmpty()) && (dateFilterFrom == null && dateFilterTo == null))  {
+            messagePagesManager.mainPagesMessages();
+        } else if ((dateFilterTo != null && dateFilterFrom != null) || (senderFilter != null && !senderFilter.isEmpty())){
             messagePagesManager.filterMessages(senderFilter, dateFilterFrom, dateFilterTo);
         }
        // }
@@ -190,8 +190,8 @@ public class HistorySMSMessagesController implements DeletableMessagesController
     private void searchHistoryBySender(String newValue) {
         System.out.println("in search history by sender New value is: " + newValue);
         senderFilter = newValue;
-        if (senderFilter.isEmpty() && dateFilterFrom == null && dateFilterTo == null)  {
-            messagePagesManager.switchToMainPages();
+        if ((senderFilter == null || senderFilter.isEmpty()) && (dateFilterFrom == null || dateFilterTo == null))  {
+            messagePagesManager.mainPagesMessages();
         } else {
             messagePagesManager.filterMessages(senderFilter, dateFilterFrom, dateFilterTo);
         }
@@ -284,8 +284,8 @@ public class HistorySMSMessagesController implements DeletableMessagesController
         datePickerTo.setValue(null);
         dateFilterFrom = null;
         dateFilterTo = null;
-        if (senderFilter.isEmpty())  {
-            messagePagesManager.switchToMainPages();
+        if (senderFilter == null || senderFilter.isEmpty())  {
+            messagePagesManager.mainPagesMessages();
         } else {
             messagePagesManager.filterMessages(senderFilter, dateFilterFrom, dateFilterTo);
         }

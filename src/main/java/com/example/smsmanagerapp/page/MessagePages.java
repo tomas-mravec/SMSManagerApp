@@ -18,6 +18,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -43,6 +44,12 @@ public class MessagePages {
     private int numberOfPages;
     private List<Button> buttons;
     int x = 0;
+    private String textFilter;
+    private LocalDate dateFilterFrom;
+    private LocalDate dateFilterTo;
+    private boolean connectToPane;
+    private boolean firstUpdate;
+
     public MessagePages(AnchorPane pagePane, MessageManager messageManager,
                         boolean sendToHistory, int pageLimit, HBox buttonBox) {
         this.pagePane = pagePane;
@@ -53,21 +60,28 @@ public class MessagePages {
         this.messageManager = messageManager;
         this.MAX_MESSAGES_ON_PAGE = pageLimit;
         this.buttons = new ArrayList<>();
+        this.firstUpdate = true;
         this.deleteMessagesManager = new DeleteMessagesManager(messageManager);
+        this.deleteMessagesManager.setPageManager(this);
         if (sendToHistory) {
             this.setMessagesAsSeenManager = new SetMessagesAsSeenManager(messageManager);
+            this.setMessagesAsSeenManager.setPageManager(this);
         }
-        this.helper = new VBox();
         this.buttonBox = buttonBox;
-        setUpPages(messageManager.getNumberOfMessages(!this.sendToHistory));
     }
 
-    private void setUpPages(int numberOfMessages) {
+    public void setUpPages() {
+        int numberOfMessages = messageManager.getNumberOfMessages(!this.sendToHistory, null, null, null);
         double result = (double) numberOfMessages / MAX_MESSAGES_ON_PAGE;
         numberOfPages =(int) Math.ceil(result);
+        VBox page = new VBox();
+        page.setPrefHeight(596);
+        page.setPrefWidth(1336);
+        pages.put(0, page);
+        pagesUpdated.put(page, false);
         System.out.println("Number of messages je: " + numberOfMessages + " Result je: " + result + " Number of pages je: " + numberOfPages);
         createButtons(numberOfPages, 0);
-        switchPage(0);
+        //switchPage(0);
     }
 
     public void selectAllMessagesAsSeen() {
@@ -99,6 +113,7 @@ public class MessagePages {
     }
 
     public void switchPage(int id) {
+        System.out.println("Pocet page vboxov v hasmape je: " + pages.size());
         VBox page = pages.get(id);
         currentId = id;
         if (page == null) {
@@ -107,19 +122,30 @@ public class MessagePages {
             page.setPrefWidth(1336);
             pages.put(id, page);
             pagesUpdated.put(page, false);
-            updatePage(page);
+            System.out.printf("vytvaran novy page id " + id);
+            updatePage(page, textFilter, dateFilterFrom, dateFilterTo);
         } else if (!pagesUpdated.get(page)) {
-            updatePage(page);
+            updatePage(page, textFilter, dateFilterFrom, dateFilterTo);
+            System.out.println("idem updatnut existujucu page s id: " + currentId);
         }
+
+        //tu asi treba dat else lebo zbytocne to davame do managerov inak
+
+        System.out.println("Stav updtovania aktualnej page id: " + currentPage + " " + currentId + " je: " + pagesUpdated.get(page));
+
         deleteMessagesManager.pageSwitched(pageMessageBlocks.get(page), page);
         if (sendToHistory) {
             setMessagesAsSeenManager.pageSwitched(pageMessageBlocks.get(page), page);
         }
+        ///potial
+
         if (currentPage != null) {
             pagePane.getChildren().remove(currentPage);
         }
         currentPage = page;
-        pagePane.getChildren().add(page);
+        firstUpdate = false;
+        if (connectToPane)
+            pagePane.getChildren().add(page);
         System.out.println("Switchol som do page: " + id + 1);
     }
 
@@ -133,7 +159,8 @@ public class MessagePages {
                 Button pageButton = fxmlLoader.load();
                 pageButton.setText(i + 1 + "");
                 buttonBox.setHgrow(pageButton,javafx.scene.layout.Priority.ALWAYS);
-                buttonBox.getChildren().add(pageButton);
+                if (connectToPane)
+                    buttonBox.getChildren().add(pageButton);
                 buttons.add(pageButton);
                 int id = i;
                 pageButton.setOnAction(event -> {
@@ -146,9 +173,9 @@ public class MessagePages {
     }
 
 
-    private boolean updateNumberOfPageButtons() {
-        boolean lastPage = false;
-        double result = (double)  messageManager.getNumberOfMessages(!sendToHistory) / MAX_MESSAGES_ON_PAGE;
+    private boolean updateNumberOfPageButtons(String textFilter, LocalDate dateFilterFrom, LocalDate dateFilterTo) {
+        boolean updatePage = true;
+        double result = (double)  messageManager.getNumberOfMessages(!sendToHistory, textFilter, dateFilterFrom, dateFilterTo) / MAX_MESSAGES_ON_PAGE;
         int newNumberOfPages =(int) Math.ceil(result);
         int difference = newNumberOfPages - this.numberOfPages;
         if (difference > 0) {
@@ -158,44 +185,80 @@ public class MessagePages {
             int buttonsSize = buttons.size();
             for (int i = buttonsSize - 1; i > buttonsSize -1 + difference; i--) {   //difference je vzdy zaporne
                 System.out.println("Mazem button " + i);
-                buttonBox.getChildren().remove(buttons.get(i));
+                if (connectToPane)
+                    buttonBox.getChildren().remove(buttons.get(i));
                 buttons.remove(i);
                 VBox vBoxToRemove = pages.get(i);
-                pages.remove(vBoxToRemove);
+                System.out.println("Mazem vbox page " + i + " zostavajuci pocet vboxov je: " + pages.size());
+                pages.remove(i);
                 pagesUpdated.remove(vBoxToRemove);
                 pageMessageBlocks.remove(vBoxToRemove);
             }
-            if (!pages.containsValue(currentPage)) {
+            this.numberOfPages = newNumberOfPages;
+            if (!pages.containsValue(currentPage) && pages.size() > 0 && !firstUpdate) {
 //                currentPage = pages.get(buttonsSize -1 + difference);
 //                currentId = buttonsSize -1 + difference;
                 System.out.println("Pages does not contian currentPage, currentid: " + currentId);
-                lastPage = true;
+                updatePage = false;                                             //nechceme updatovat page ked switchPage ju updatne
                 switchPage(buttonsSize -1 + difference);
             }
-            this.numberOfPages = newNumberOfPages;
+            else if (pages.size() <= 0) {
+                noMessages();
+                updatePage = false;
+            }
         }
-        return lastPage;
+        return updatePage;
+    }
+
+    private void noMessages() {
+        pagePane.getChildren().remove(currentPage);
+        currentPage = null;
     }
 
     public void update() {
-        if (!updateNumberOfPageButtons()) {
-            pagesUpdated.forEach((key, value) -> pagesUpdated.replace(key, false));
-            if (!pages.isEmpty())                                                      //aby sme sa nesnazili pridat data ked uz nemame ziadne
-                updatePage(currentPage);
-            //switchPage(currentId);
-        }
-        //switchPage(currentId);
-    }
-    public void updatePage(VBox page) {
+       if ((textFilter != null && !textFilter.isEmpty()) || (dateFilterFrom != null && dateFilterTo != null)) {
+            update(textFilter, dateFilterFrom, dateFilterTo, false);
+         } else {
+           pagesUpdated.forEach((key, value) -> pagesUpdated.replace(key, false));
+           boolean updateCurrentPage = updateNumberOfPageButtons(null, null, null);
+             if (updateCurrentPage){
+               if (currentPage == null)
+                   switchPage(0);
+               else
+                   updatePage(currentPage, null, null, null);
+            }
+       }
 
+    }
+
+    public void update(String newValue, LocalDate dateFilterFrom, LocalDate dateFilterTo, boolean reload) {
+        this.textFilter = newValue;
+        this.dateFilterFrom = dateFilterFrom;
+        this.dateFilterTo = dateFilterTo;
+        pagesUpdated.forEach((key, value) -> pagesUpdated.replace(key, false));
+        boolean updateCurrentPage = updateNumberOfPageButtons(textFilter, dateFilterFrom, dateFilterTo);
+        if (updateCurrentPage){
+//            if (currentPage == null)
+//                switchPage(0);
+//            else
+//                updatePage(currentPage, null, null, null);
+            switchPage(0);
+        }
+        }
+
+
+
+    public void updatePage(VBox page, String newValue, LocalDate dateFilterFrom, LocalDate dateFilterTo) {
         Platform.runLater(() -> {
             page.getChildren().clear();
             //System.out.println("Mazem celu page");
             HashMap<MessageBlockController, SMSMessage> messageBlockControllers = new HashMap<>();
-            for (Data data : messageManager.getPageMessages(currentId * MAX_MESSAGES_ON_PAGE, MAX_MESSAGES_ON_PAGE, !sendToHistory)) {
+            for (Data data : messageManager.getPageMessages(currentId * MAX_MESSAGES_ON_PAGE, MAX_MESSAGES_ON_PAGE,
+                    !sendToHistory, newValue, dateFilterFrom, dateFilterTo)) {
                 System.out.println("Davam spravu na page");
                 updateGUI(data, page, messageBlockControllers);
             }
+            System.out.println("Updatujem page: " + currentId + " status na true");
             pagesUpdated.put(page, true);
             pageMessageBlocks.put(page, messageBlockControllers);
             deleteMessagesManager.pageSwitched(messageBlockControllers, page);
@@ -224,10 +287,8 @@ public class MessagePages {
             SMSMessage smsMessage = (SMSMessage) data;
 
             messageBlockController.setDeleteMessagesManager(deleteMessagesManager);
-            deleteMessagesManager.setPageManager(this);
             if (setMessagesAsSeenManager != null) {
                 messageBlockController.setSetMessagesAsSeenManager(setMessagesAsSeenManager);
-                setMessagesAsSeenManager.setPageManager(this);
                 messageBlockController.setMarkableAsSeen(true);
             }
             messageBlockController.setContactLabelText(smsMessage.getSender());
@@ -237,7 +298,7 @@ public class MessagePages {
             messageBlockController.addSeparator(separator);
 
             messageBlockControllers.put(messageBlockController, (SMSMessage) data);
-            //messageBox.getChildren().addAll(messageBlockController.getRoot(), separator);
+            messageBox.getChildren().addAll(messageBlockController.getRoot(), separator);
             String position;
             if (sendToHistory) {
                 position = "new messages";
@@ -245,7 +306,7 @@ public class MessagePages {
                 position = "history";
             }
             //System.out.println("Pred pridanim v " + position + " pocej nodes je: " +  (long) messageBox.getChildren().size());
-            messageBox.getChildren().add(messageBlockController.getRoot());
+           // messageBox.getChildren().add(messageBlockController.getRoot());
             System.out.println("pridavam novy node do vboxu, cize spravu, x je: " + x);
             //System.out.println("Pridal som node do vboxu v " + position + " , celkovy pocet children nodes je: " + (long) messageBox.getChildren().size());
             // });
@@ -253,6 +314,22 @@ public class MessagePages {
             System.out.println("Data je null");
         }
     }
+
+    public void disconnectFromPanel() {
+        connectToPane = false;
+        pagePane.getChildren().remove(currentPage);
+        buttonBox.getChildren().clear();
+    }
+
+    public void connectToPanel() {
+        connectToPane = true;
+        if (currentPage!= null) {
+            pagePane.getChildren().add(currentPage);
+            System.out.println("current page nie je null");
+        }
+        buttonBox.getChildren().addAll(buttons);
+    }
+
 
 //    public void setMessageManager(SMSMessageManager messageManager) {
 //        this.messageManager = messageManager;

@@ -9,25 +9,32 @@ import java.time.LocalDate;
 
 public class MessagePagesManager {
 
-    private AnchorPane rootPane;
+    private AnchorPane pagePane;
     private MessageManager messageManager;
     private boolean sendToHistory;
     private final int MAX_NUMBER_OF_MESSAGES_ON_PAGE;
     private HBox buttonBox;
     private MessagePages mainPages;
+    private MessagePages filterPages;
     private MessagePages currentPages;
 
-    public MessagePagesManager(AnchorPane rootPane, MessageManager messageManager, boolean sendToHistory, int MAX_NUMBER_OF_MESSAGES_ON_PAGE, HBox buttonBox) {
-        this.rootPane = rootPane;
+    public MessagePagesManager(AnchorPane pagePane, MessageManager messageManager, boolean sendToHistory, int MAX_NUMBER_OF_MESSAGES_ON_PAGE, HBox buttonBox) {
+        this.pagePane = pagePane;
         this.messageManager = messageManager;
         this.sendToHistory = sendToHistory;
         this.MAX_NUMBER_OF_MESSAGES_ON_PAGE = MAX_NUMBER_OF_MESSAGES_ON_PAGE;
         this.buttonBox = buttonBox;
-        this.mainPages = new MessagePages(rootPane, messageManager, sendToHistory, MAX_NUMBER_OF_MESSAGES_ON_PAGE, buttonBox);
+        this.mainPages = new MessagePages(pagePane, messageManager, sendToHistory, MAX_NUMBER_OF_MESSAGES_ON_PAGE, buttonBox);
+        this.filterPages = new MessagePages(pagePane, messageManager, sendToHistory, MAX_NUMBER_OF_MESSAGES_ON_PAGE, buttonBox);
         this.currentPages = mainPages;
         if (!sendToHistory) {
             messageManager.addPageManagerToNotifyWhenMessageChangesToSeen(mainPages);
         }
+        this.mainPages.setUpPages();
+        this.filterPages.setUpPages();
+
+        this.mainPages.switchPage(0);
+        this.mainPages.connectToPanel();
     }
 
     public void update() {
@@ -59,10 +66,28 @@ public class MessagePagesManager {
         currentPages.markMessagesAsSeen();
     }
 
-    public void filterMessages(String newValue, LocalDate dateFilterFrom, LocalDate dateFilterTo) {
-        //MessagePages newMessagePages = new MessagePages();
+    private void switchPaiges(MessagePages currentPages, MessagePages targetPages) {
+        //odpojit current pages, cize aj buttony
+        //pripojit target pages
+
+        System.out.println("disconnecting and connecting new pannel");
+        currentPages.disconnectFromPanel();
+        targetPages.connectToPanel();
+        this.currentPages = targetPages;
     }
 
-    public void switchToMainPages() {
+    public void filterMessages(String newValue, LocalDate dateFilterFrom, LocalDate dateFilterTo) {
+        System.out.println("Filter mode");
+        filterPages.update(newValue, dateFilterFrom, dateFilterTo, true);
+        if (currentPages != filterPages)
+            switchPaiges(currentPages, filterPages);
+    }
+
+
+    public void mainPagesMessages() {
+        System.out.println("main pages mode");
+        mainPages.update();
+        if (currentPages != mainPages)
+            switchPaiges(currentPages, mainPages);
     }
 }

@@ -38,34 +38,39 @@ public class ConnectionEstablisherYeastar implements ConnectionEstablisher {
             if (in != null) {
                 in.close();
             }
-            socket = new Socket(IP_ADDRESS, PORT);
-            out = new PrintWriter(socket.getOutputStream(), true);
-            in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+//            socket = new Socket(IP_ADDRESS, PORT);
+//            out = new PrintWriter(socket.getOutputStream(), true);
+//            in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
             } catch (IOException e) {
                 System.out.println("Connection failed");
+                socket = null;
+                out = null;
+                in = null;
         }
     }
 
     public void logIn() {
-        out.println("Action: Login");
-        out.println("Username: " + USERNAME);
-        out.println("Secret: " + SECRET);
-        out.println();
+        if (socket != null && in != null && out != null) {
+            out.println("Action: Login");
+            out.println("Username: " + USERNAME);
+            out.println("Secret: " + SECRET);
+            out.println();
 
-        //Reading response from device
-        String response;
-        for (int i = 0; i < 3; i++) {
-            try {
-                response = in.readLine();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
+            //Reading response from device
+            String response;
+            for (int i = 0; i < 3; i++) {
+                try {
+                    response = in.readLine();
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+                System.out.println(response);
             }
-            System.out.println(response);
-        }
-        //sendMessage();
+            //sendMessage();
 
-        //closeResources();
+            //closeResources();
+        }
     }
 
     private void sendMessage() {
