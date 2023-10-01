@@ -12,6 +12,7 @@ import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.Separator;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
@@ -231,7 +232,7 @@ public class MessagePages {
 
     }
 
-    public void update(String newValue, LocalDate dateFilterFrom, LocalDate dateFilterTo, boolean reload) {
+    public void update(String newValue, LocalDate dateFilterFrom, LocalDate dateFilterTo, boolean switchToFirstPage) {
         this.textFilter = newValue;
         this.dateFilterFrom = dateFilterFrom;
         this.dateFilterTo = dateFilterTo;
@@ -242,7 +243,10 @@ public class MessagePages {
 //                switchPage(0);
 //            else
 //                updatePage(currentPage, null, null, null);
-            switchPage(0);
+            if (switchToFirstPage)
+                switchPage(0);
+            else
+                updatePage(currentPage, newValue, dateFilterFrom, dateFilterTo);
         }
         }
 
@@ -299,6 +303,10 @@ public class MessagePages {
 
             messageBlockControllers.put(messageBlockController, (SMSMessage) data);
             messageBox.getChildren().addAll(messageBlockController.getRoot(), separator);
+
+            Label buttonLabel = new Label(currentId + 1 + " Current button");
+            messageBox.getChildren().add(buttonLabel);
+
             String position;
             if (sendToHistory) {
                 position = "new messages";

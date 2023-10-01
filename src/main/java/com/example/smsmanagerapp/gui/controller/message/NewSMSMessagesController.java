@@ -128,11 +128,11 @@ public class NewSMSMessagesController implements GUIControllerUpdateable, Deleta
         System.out.println("in search history by sender New value is: " + newValue);
 
         if (!newValue.equals(senderFilter) && newValue != null && !newValue.isEmpty()) {
-            messagePagesManager.filterMessages(senderFilter, dateFilterFrom, dateFilterTo);
+            messagePagesManager.filterMessages(newValue, dateFilterFrom, dateFilterTo);
         } else if (newValue.isEmpty() && (dateFilterTo == null || dateFilterFrom == null)) {
             messagePagesManager.mainPagesMessages();
         } else if (newValue.isEmpty() && dateFilterFrom != null && dateFilterTo != null) {
-            messagePagesManager.filterMessages(senderFilter, dateFilterFrom, dateFilterTo);
+            messagePagesManager.filterMessages(newValue, dateFilterFrom, dateFilterTo);
         }
         senderFilter = newValue;
 //        if ((newValue == null || senderFilter.isEmpty()) && (dateFilterFrom == null || dateFilterTo == null))  {
@@ -227,7 +227,7 @@ public class NewSMSMessagesController implements GUIControllerUpdateable, Deleta
                     senderFilter != null && !senderFilter.isEmpty()) {
             messagePagesManager.filterMessages(senderFilter, datePickerFrom.getValue(), datePickerTo.getValue());
         } else if ((datePickerFrom.getValue() == null && datePickerTo.getValue() == null) && (dateFilterFrom != null || dateFilterTo != null) &&
-                senderFilter != null && !senderFilter.isEmpty()) {
+                senderFilter != null && senderFilter.isEmpty()) {
             messagePagesManager.mainPagesMessages();
         }
 

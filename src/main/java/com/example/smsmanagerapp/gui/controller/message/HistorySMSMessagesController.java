@@ -168,15 +168,29 @@ public class HistorySMSMessagesController implements DeletableMessagesController
     }
 
     public void dateSelected(ActionEvent event) {
+//        dateFilterFrom = datePickerFrom.getValue();
+//        dateFilterTo = datePickerTo.getValue();
+//        //if (dateFilterFrom != null && dateFilterTo != null) {
+//        if ((senderFilter == null || senderFilter.isEmpty()) && (dateFilterFrom == null && dateFilterTo == null))  {
+//            messagePagesManager.mainPagesMessages();
+//        } else if ((dateFilterTo != null && dateFilterFrom != null) || (senderFilter != null && !senderFilter.isEmpty())){
+//            messagePagesManager.filterMessages(senderFilter, dateFilterFrom, dateFilterTo);
+//        }
+       // }
+        if ((dateFilterTo != datePickerTo.getValue() || dateFilterFrom != datePickerFrom.getValue()) &&
+                (datePickerFrom.getValue() != null && datePickerTo.getValue() != null)) {
+            messagePagesManager.filterMessages(senderFilter, datePickerFrom.getValue(), datePickerTo.getValue());
+        }
+        else if ((datePickerFrom.getValue() == null && datePickerTo.getValue() == null) && (dateFilterFrom != null || dateFilterTo != null) &&
+                senderFilter != null && !senderFilter.isEmpty()) {
+            messagePagesManager.filterMessages(senderFilter, datePickerFrom.getValue(), datePickerTo.getValue());
+        } else if ((datePickerFrom.getValue() == null && datePickerTo.getValue() == null) && (dateFilterFrom != null || dateFilterTo != null) &&
+                senderFilter != null && senderFilter.isEmpty()) {
+            messagePagesManager.mainPagesMessages();
+        }
+
         dateFilterFrom = datePickerFrom.getValue();
         dateFilterTo = datePickerTo.getValue();
-        //if (dateFilterFrom != null && dateFilterTo != null) {
-        if ((senderFilter == null || senderFilter.isEmpty()) && (dateFilterFrom == null && dateFilterTo == null))  {
-            messagePagesManager.mainPagesMessages();
-        } else if ((dateFilterTo != null && dateFilterFrom != null) || (senderFilter != null && !senderFilter.isEmpty())){
-            messagePagesManager.filterMessages(senderFilter, dateFilterFrom, dateFilterTo);
-        }
-       // }
     }
 
     private void filterMesssages() {
@@ -188,13 +202,24 @@ public class HistorySMSMessagesController implements DeletableMessagesController
     }
 
     private void searchHistoryBySender(String newValue) {
+//        System.out.println("in search history by sender New value is: " + newValue);
+//        senderFilter = newValue;
+//        if ((senderFilter == null || senderFilter.isEmpty()) && (dateFilterFrom == null || dateFilterTo == null))  {
+//            messagePagesManager.mainPagesMessages();
+//        } else {
+//            messagePagesManager.filterMessages(senderFilter, dateFilterFrom, dateFilterTo);
+//        }
+
         System.out.println("in search history by sender New value is: " + newValue);
-        senderFilter = newValue;
-        if ((senderFilter == null || senderFilter.isEmpty()) && (dateFilterFrom == null || dateFilterTo == null))  {
+
+        if (!newValue.equals(senderFilter) && newValue != null && !newValue.isEmpty()) {
+            messagePagesManager.filterMessages(newValue, dateFilterFrom, dateFilterTo);
+        } else if (newValue.isEmpty() && (dateFilterTo == null || dateFilterFrom == null)) {
             messagePagesManager.mainPagesMessages();
-        } else {
-            messagePagesManager.filterMessages(senderFilter, dateFilterFrom, dateFilterTo);
+        } else if (newValue.isEmpty() && dateFilterFrom != null && dateFilterTo != null) {
+            messagePagesManager.filterMessages(newValue, dateFilterFrom, dateFilterTo);
         }
+        senderFilter = newValue;
 
     }
 
